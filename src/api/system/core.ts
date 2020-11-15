@@ -27,10 +27,9 @@ class Core {
             const jwtSignature = hash.sha256().update(uuid).digest('hex');
 
             const jwtPayload = {
+                user_id: data.user_id,
                 iss: req.headers.host,
                 sub: data.username || data.email,
-                uuid,
-                user_id: data.user_id,
                 iat,
                 exp: Math.floor(exp),
             };
