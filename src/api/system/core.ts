@@ -3,11 +3,17 @@ import jwt from 'jsonwebtoken';
 import { v5 as uuidv5 } from 'uuid';
 import hash from 'hash.js';
 
+import { query } from './../../config/database';
+
 class Core {
     login(req: express.Request, res: express.Response) {
         let result: any = {
             status: false,
         };
+
+        query(`select 1`).then((res) => {
+            console.log(res);
+        });
 
         if (req.body.email === 'famil.restu@ersys.com' && req.body.password === 'password') {
             const data = {
@@ -20,7 +26,7 @@ class Core {
             };
 
             const uuid = uuidv5(data.email, `${process.env.UUID_NAMESPACE as string}`);
-            console.log(uuid);
+
             const iat = Math.floor(Date.now() / 1000);
             const exp = Date.now() / 1000 + 60 * 60;
 

@@ -17,6 +17,10 @@ const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
     // await database();
 
+    await database();
+
+    // console.log('test');
+
     app.listen(port)
         .on('error', (err: NodeJS.ErrnoException) => () => onErrorServer(err))
         .on('listening', () => onServerListening(app));
@@ -48,7 +52,7 @@ const onServerListening = (app: Express) => {
     // application routes
     routes(app);
 
-    console.clear();
+    // console.clear();
 
     console.log(`Listening on port: ${port}`);
 };
