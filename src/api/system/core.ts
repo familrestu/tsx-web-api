@@ -11,14 +11,15 @@ class Core {
             status: false,
         };
 
-        query(`select 1`).then((res) => {
+        /* query(`select 1`).then((res) => {
             console.log(res);
-        });
+        }); */
 
         if (req.body.email === 'famil.restu@ersys.com' && req.body.password === 'password') {
             const data = {
                 user_id: 1,
                 app: [],
+                defaultApp: null,
                 username: 'famil.restu',
                 email: 'famil.restu@ersys.com',
                 full_name: 'Famil Restu Pambudi',
@@ -30,19 +31,23 @@ class Core {
             const iat = Math.floor(Date.now() / 1000);
             const exp = Date.now() / 1000 + 60 * 60;
 
-            const jwtSignature = hash.sha256().update(uuid).digest('hex');
+            const jwtSignature = hash.sha256().update(`${uuid}${process.env.JWT_KEY}`).digest('hex');
 
             const jwtPayload = {
                 user_id: data.user_id,
                 iss: req.headers.host,
                 sub: data.username || data.email,
+                data,
                 iat,
                 exp: Math.floor(exp),
             };
 
             result.jwt = jwt.sign(jwtPayload, jwtSignature);
-            res.cookie('jwt', result.jwt, { httpOnly: true, signed: true });
-            result.status = true;
+
+            res.cookie('jwt', result.jwt, { httpOnly: true, signed: true, sameSite: 'lax' });
+            res.cookie('uuid', uuid, { httpOnly: true, signed: true, sameSite: 'lax' });
+
+            result.loginStatus = true;
 
             result = { ...result, ...data, uuid };
         }
@@ -51,18 +56,21 @@ class Core {
     }
 
     loginStatus(req: express.Request, res: express.Response) {
-        const result: any = {
+        let result: any = {
             loginStatus: false,
         };
 
-        if (req.signedCookies.jwt) {
+        if (req.signedCookies.jwt && req.signedCookies.uuid) {
             try {
-                if (jwt.verify(req.signedCookies.jwt, process.env.JWT_KEY as string)) {
-                    result.loginStatus = true;
-                } else {
-                    result.loginStatus = false;
-                    result.message = 'JWT Expired';
-                }
+                const jwtSignature = hash.sha256().update(`${req.signedCookies.uuid}${process.env.JWT_KEY}`).digest('hex');
+                const decoded: any = jwt.verify(req.signedCookies.jwt, jwtSignature);
+
+                const now = Date.now();
+                const exp = decoded.exp * 1000;
+
+                console.log(exp - now, new Date(exp), new Date(now));
+
+                result = { ...result, ...decoded.data, /* exp, now, */ loginStatus: true };
             } catch (error) {
                 result.loginStatus = false;
                 result.error = error;
@@ -73,8 +81,10 @@ class Core {
         return { ...result };
     }
 
-    logout() {
-        return 'logout';
+    logout(req: express.Request, res: express.Response) {
+        res.clearCookie('jwt');
+        res.clearCookie('uuid');
+        return { loginStatus: true };
     }
 }
 
