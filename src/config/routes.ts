@@ -23,34 +23,30 @@ const routes = (app: Express): void => {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         const api = require(`../api${path}`).default;
         const result = api[req.params.function](req, res);
-
-        res.json({ ...result });
+        // console.log(typeof result);
+        // res.json({ ...result });
+        res.send(result);
     });
 
     /* not authorized */
     app.use((req: express.Request, res: express.Response) => {
         res.status(404);
-        res.json({ error: 'Not authorized', status: false });
+        res.send({ error: 'Not authorized', status: false });
     });
 };
 
 const checkJWT = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
-    // return true;
     if (req.params.module !== 'system') {
-        // if (!checkJWT(req.signedCookies)) {
-        //     res.status(403);
-        //     res.json({ error: 'JWT Expired', statuscode: res.statusCode, status: false });
-        // }
-
         try {
             if (req.signedCookies.jwt && req.signedCookies.uuid) {
                 const uuid = req.signedCookies.uuid;
                 const jwtSignature = hash.sha256().update(`${uuid}${process.env.JWT_KEY}`).digest('hex');
                 jwt.verify(req.signedCookies.jwt, jwtSignature);
+                next();
             }
         } catch (error) {
             res.status(403);
-            res.json({ error: error.code, message: error.message });
+            res.send({ error: error.code, message: error.message });
         }
     } else {
         next();

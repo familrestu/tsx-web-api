@@ -5,21 +5,36 @@ import hash from 'hash.js';
 
 import { query } from './../../config/database';
 
+type MenuAuthReturnType = {
+    group: string | null;
+    groupid: string | null;
+    id: string;
+    icon: string | null;
+    name: string;
+    link: string;
+    componentPath?: string;
+    isMenu: 0 | 1 | 'No' | 'Yes';
+    isGlobal: 0 | 1 | 'No' | 'Yes';
+    accessmode?: 0 | 1 | 2 | 3 | 'read' | 'write' | 'update' | 'delete';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    children?: any;
+}[];
+
 class Core {
     login(req: express.Request, res: express.Response) {
         let result: any = {
             status: false,
         };
 
-        /* query(`select 1`).then((res) => {
-            console.log(res);
-        }); */
-
-        if (req.body.email === 'famil.restu@ersys.com' && req.body.password === 'password') {
+        if (
+            (req.body.email === 'famil.restu@ersys.com' && req.body.password === 'password') ||
+            (req.body.is_accountcode !== undefined && req.body.username === 'famil.restu' && req.body.password === 'password')
+        ) {
             const data = {
                 user_id: 1,
-                app: [],
-                defaultApp: null,
+                app: ['hris'],
+                defaultApp: 'hris',
+                currentApp: 'hris',
                 username: 'famil.restu',
                 email: 'famil.restu@ersys.com',
                 full_name: 'Famil Restu Pambudi',
@@ -55,6 +70,121 @@ class Core {
         return { ...result };
     }
 
+    getMenuAuth(): MenuAuthReturnType {
+        return [
+            {
+                group: null,
+                groupid: null,
+                id: 'profile',
+                icon: null,
+                name: 'Profile',
+                link: '/profile',
+                componentPath: '/profile/ProfileScreen',
+                isMenu: 'No',
+                isGlobal: 'Yes',
+                accessmode: 0,
+            },
+            {
+                group: 'Time & Attendance',
+                groupid: 'attendance',
+                id: 'attendance',
+                icon: 'fas fa-clock',
+                name: 'Attendance Data',
+                link: '/attendance/attendancedata',
+                componentPath: '/attendance/AttendanceDataScreen',
+                isMenu: 'Yes',
+                isGlobal: 'No',
+                accessmode: 0,
+            },
+        ];
+        /* return [
+            {
+                group: 'Components',
+                groupid: 'components',
+                id: 'form',
+                icon: 'fas fa-clipboard',
+                name: 'form',
+                link: '/form',
+            },
+            {
+                group: 'Components',
+                groupid: 'components',
+                id: 'page',
+                icon: 'fas fa-columns',
+                name: 'page',
+                link: '/page',
+            },
+            {
+                group: 'Components',
+                groupid: 'components',
+                id: 'table',
+                icon: 'fas fa-table',
+                name: 'table',
+                link: '/table',
+            },
+            {
+                group: 'Bootstrap',
+                groupid: 'bootstrap',
+                id: 'input',
+                icon: 'fas fa-keyboard',
+                name: 'input',
+                link: '/bootstrap/input',
+                children: [
+                    {
+                        group: null,
+                        groupid: null,
+                        id: 'text',
+                        icon: null,
+                        name: 'Text',
+                        link: '/bootstrap/input/text',
+                    },
+                    {
+                        group: 'Selection',
+                        groupid: 'Selection',
+                        id: 'radio',
+                        icon: null,
+                        name: 'radio',
+                        link: '/bootstrap/input/radio',
+                        children: [
+                            {
+                                group: 'nestedgroup',
+                                groupid: 'nestedgroup',
+                                id: 'textNested',
+                                icon: null,
+                                name: 'TextNested',
+                                link: '/bootstrap/input/textNested',
+                            },
+                            {
+                                group: 'nestedgroup',
+                                groupid: 'nestedgroup',
+                                id: 'radioNested',
+                                icon: null,
+                                name: 'radioNested',
+                                link: '/bootstrap/input/radioNested',
+                            },
+                            {
+                                group: 'nestedgroup',
+                                groupid: 'nestedgroup',
+                                id: 'checkboxNested',
+                                icon: null,
+                                name: 'checkboxNested',
+                                link: '/bootstrap/input/checkboxNested',
+                            },
+                        ],
+                    },
+                    {
+                        group: 'Selection',
+                        groupid: 'Selection',
+                        id: 'checkbox',
+                        icon: null,
+                        name: 'checkbox',
+                        link: '/bootstrap/input/checkbox',
+                    },
+                ],
+            },
+        ]; */
+    }
+
     loginStatus(req: express.Request, res: express.Response) {
         let result: any = {
             loginStatus: false,
@@ -68,7 +198,7 @@ class Core {
                 const now = Date.now();
                 const exp = decoded.exp * 1000;
 
-                console.log(exp - now, new Date(exp), new Date(now));
+                // console.log(exp - now, new Date(exp), new Date(now));
 
                 result = { ...result, ...decoded.data, /* exp, now, */ loginStatus: true };
             } catch (error) {
