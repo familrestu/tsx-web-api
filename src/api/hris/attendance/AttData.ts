@@ -1,16 +1,16 @@
 import express from 'express';
 
-type ListingReturnType = {
-    header: Array<any>;
-    body: Array<any>;
-};
-
-class Core {
-    constructor() {
-        /*  */
-    }
-
-    Listing(): ListingReturnType {
+class AttData extends global.Core {
+    // Test() {
+    //     return super.Listing();
+    // }
+    // GetListing() {
+    //     // console.log(super.Listing);
+    //     // return { status: 'hmm' };
+    //     // return super.Listing();
+    //     return { status: true };
+    // }
+    /* Listing() {
         return {
             header: ['date', 'start_time', 'end_time'],
             body: [
@@ -38,7 +38,7 @@ class Core {
                 ['15:00', '18:00', null],
             ],
         };
-    }
+    } */
 }
 
-export default Core;
+export default new AttData();

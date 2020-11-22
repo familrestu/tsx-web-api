@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Express as ExpressTypes } from 'express';
 
 import debug from 'debug';
 import { Express } from 'express-serve-static-core';
@@ -6,6 +6,8 @@ import { Express } from 'express-serve-static-core';
 import routes from './config/routes';
 import middlewares from './config/middlewares';
 import database from './config/database';
+
+import Core from './api/system/core';
 
 import './config/env';
 
@@ -52,7 +54,10 @@ const onServerListening = (app: Express) => {
     // application routes
     routes(app);
 
-    // console.clear();
+    // global.CoreApp = Core;
+    // const __CONNECTION_COUNT__ = 1;
+    // console.log(global.__EXPRESS_APP__);
+    global.Core = Core;
 
     console.log(`Listening on port: ${port}`);
 };
