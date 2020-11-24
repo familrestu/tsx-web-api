@@ -97,6 +97,18 @@ class Global {
                 isGlobal: 'No',
                 accessmode: 0,
             },
+            {
+                group: 'Time & Attendance',
+                groupid: 'attendance',
+                id: 'attendance',
+                icon: 'fas fa-clock',
+                name: 'Attendance Data',
+                link: '/attendance/attendancedata/details/:id',
+                componentPath: '/attendance/AttendanceDataDetailsScreen',
+                isMenu: 'No',
+                isGlobal: 'No',
+                accessmode: 0,
+            },
         ];
         /* return [
             {

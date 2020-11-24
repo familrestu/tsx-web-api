@@ -17,15 +17,16 @@ const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 (async () => {
     const app = express();
 
-    // await database();
-
     await database();
 
-    // console.log('test');
-
-    app.listen(port)
-        .on('error', (err: NodeJS.ErrnoException) => () => onErrorServer(err))
-        .on('listening', () => onServerListening(app));
+    try {
+        app.listen(port)
+            // .on('error', (err: NodeJS.ErrnoException) => () => onErrorServer(err))
+            .on('listening', () => onServerListening(app));
+    } catch (error) {
+        console.log(error.message);
+        process.exit(1);
+    }
 })();
 
 const onErrorServer = (err: NodeJS.ErrnoException) => {
