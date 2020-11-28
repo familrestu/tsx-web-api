@@ -7,9 +7,10 @@ import routes from './config/routes';
 import middlewares from './config/middlewares';
 import database from './config/database';
 
-import Core from './api/system/core';
-
 import './config/env';
+import 'module-alias/register';
+
+import Core from '@system/core';
 
 const port = process.env.PORT || 5000;
 const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
@@ -58,7 +59,7 @@ const onServerListening = (app: Express) => {
     // global.CoreApp = Core;
     // const __CONNECTION_COUNT__ = 1;
     // console.log(global.__EXPRESS_APP__);
-    global.Core = Core;
+    // global.Core = Core;
 
     console.log(`Listening on port: ${port}`);
 };

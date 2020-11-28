@@ -3,22 +3,24 @@ import jwt from 'jsonwebtoken';
 import { v5 as uuidv5 } from 'uuid';
 import hash from 'hash.js';
 
-import { query } from '../../config/database';
+import { query } from '@database';
 
 type MenuAuthReturnType = {
-    group: string | null;
-    groupid: string | null;
-    id: string;
-    icon: string | null;
-    name: string;
-    link: string;
-    componentPath?: string;
-    isMenu: 0 | 1 | 'No' | 'Yes';
-    isGlobal: 0 | 1 | 'No' | 'Yes';
-    accessmode?: 0 | 1 | 2 | 3 | 'read' | 'write' | 'update' | 'delete';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    children?: any;
-}[];
+    menuData: {
+        group: string | null;
+        groupid: string | null;
+        id: string;
+        icon: string | null;
+        name: string;
+        link: string;
+        componentPath?: string;
+        isMenu: 0 | 1 | 'No' | 'Yes';
+        isGlobal: 0 | 1 | 'No' | 'Yes';
+        accessmode?: 0 | 1 | 2 | 3 | 'read' | 'write' | 'update' | 'delete';
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        children?: any;
+    }[];
+};
 
 class Global {
     Login(req: express.Request, res: express.Response) {
@@ -72,44 +74,58 @@ class Global {
     }
 
     GetMenuAuth(): MenuAuthReturnType {
-        return [
-            {
-                group: null,
-                groupid: null,
-                id: 'profile',
-                icon: null,
-                name: 'Profile',
-                link: '/profile',
-                componentPath: '/profile/ProfileScreen',
-                isMenu: 'No',
-                isGlobal: 'Yes',
-                accessmode: 0,
-            },
-            {
-                group: 'Time & Attendance',
-                groupid: 'attendance',
-                id: 'attendance',
-                icon: 'fas fa-clock',
-                name: 'Attendance Data',
-                link: '/attendance/attendancedata',
-                componentPath: '/attendance/AttendanceDataScreen',
-                isMenu: 'Yes',
-                isGlobal: 'No',
-                accessmode: 0,
-            },
-            {
-                group: 'Time & Attendance',
-                groupid: 'attendance',
-                id: 'attendance',
-                icon: 'fas fa-clock',
-                name: 'Attendance Data',
-                link: '/attendance/attendancedata/details/:id',
-                componentPath: '/attendance/AttendanceDataDetailsScreen',
-                isMenu: 'No',
-                isGlobal: 'No',
-                accessmode: 0,
-            },
-        ];
+        return {
+            menuData: [
+                {
+                    group: null,
+                    groupid: null,
+                    id: 'profile',
+                    icon: null,
+                    name: 'Profile',
+                    link: '/profile',
+                    componentPath: '/profile/ProfileScreen',
+                    isMenu: 'No',
+                    isGlobal: 'Yes',
+                    accessmode: 0,
+                },
+                {
+                    group: 'Time & Attendance',
+                    groupid: 'attendance',
+                    id: 'attendance',
+                    icon: 'fas fa-clock',
+                    name: 'Attendance Data',
+                    link: '/attendance/attendancedata',
+                    componentPath: '/attendance/AttendanceDataScreen',
+                    isMenu: 'Yes',
+                    isGlobal: 'No',
+                    accessmode: 0,
+                },
+                {
+                    group: 'Time & Attendance',
+                    groupid: 'attendance',
+                    id: 'attendance',
+                    icon: 'fas fa-clock',
+                    name: 'Attendance Data',
+                    link: '/attendance/attendancedata/details/:date',
+                    componentPath: '/attendance/AttendanceDataDetailsScreen',
+                    isMenu: 'No',
+                    isGlobal: 'No',
+                    accessmode: 0,
+                },
+                {
+                    group: 'Components',
+                    groupid: 'components',
+                    id: 'components',
+                    icon: 'fas fa-table',
+                    name: 'Table',
+                    link: '/components/table',
+                    componentPath: '/components/TableScreen',
+                    isMenu: 'Yes',
+                    isGlobal: 'Yes',
+                    accessmode: 0,
+                },
+            ],
+        };
         /* return [
             {
                 group: 'Components',

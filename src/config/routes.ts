@@ -19,6 +19,8 @@ const routes = (app: Express): void => {
     app.route('/api/:module/:method/:function').all((req: express.Request, res: express.Response) => {
         /* load api */
         let path;
+        /* appRoutes is relative to application API */
+        /* such as hris, etc... */
         if (req.isAppRoutes) {
             path = `${req.currentApp}/${req.params.module}/${req.params.method}`;
         } else {
@@ -30,10 +32,13 @@ const routes = (app: Express): void => {
             const api = require(`../api/${path}`).default;
             const result = api[req.params.function](req, res);
 
-            res.send(result);
+            res.send({
+                status: true,
+                ...result,
+            });
         } catch (error) {
             res.status(500);
-            res.send({ error: `Function ${req.params.function} not found`, status: false });
+            res.send({ error: `Function ${req.params.function} not found`, status: false, stack: error.message });
         }
     });
 
@@ -45,7 +50,7 @@ const routes = (app: Express): void => {
 };
 
 const checkJWT = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
-    if (req.params.module === 'system' && req.params.method === 'global') {
+    if ((req.params.module === 'system' && req.params.method === 'global') || req.params.module === 'components') {
         req.isAppRoutes = false;
     } else {
         req.isAppRoutes = true;
@@ -67,12 +72,15 @@ const checkJWT = (req: express.Request, res: express.Response, next: express.Nex
 
                 /* set new routes based on curent_app */
                 req.currentApp = decoded.data.current_app;
-
                 next();
             } else {
-                /* if there is no signed cookies, and its a loginstatus checking, then next */
+                /* if there is no signed cookies, and checking loginstatus, then next */
                 if (req.params.module === 'system' && req.params.method === 'global' && req.params.function === 'LoginStatus') {
                     next();
+                    /* if its getting menuAuth, send empty array */
+                } else if (req.params.module === 'system' && req.params.method === 'global' && req.params.function === 'GetMenuAuth') {
+                    res.status(200);
+                    res.send({ status: true, menuData: [] });
                 } else {
                     /* else, then this guy is not authorized */
                     res.status(500);
