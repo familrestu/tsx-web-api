@@ -50,7 +50,7 @@ const routes = (app: Express): void => {
 };
 
 const checkJWT = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
-    if ((req.params.module === 'system' && req.params.method === 'global') || req.params.module === 'components') {
+    if ((req.params.module === 'system' && req.params.method === 'application') || req.params.module === 'components') {
         req.isAppRoutes = false;
     } else {
         req.isAppRoutes = true;
@@ -58,8 +58,8 @@ const checkJWT = (req: express.Request, res: express.Response, next: express.Nex
 
     /* login and logout doesn't require to chekc JWT */
     if (
-        (req.params.module === 'system' && req.params.method === 'global' && req.params.function === 'Login') ||
-        (req.params.module === 'system' && req.params.method === 'global' && req.params.function === 'Logout')
+        (req.params.module === 'system' && req.params.method === 'application' && req.params.function === 'Login') ||
+        (req.params.module === 'system' && req.params.method === 'application' && req.params.function === 'Logout')
     ) {
         next();
     } else {
@@ -75,10 +75,10 @@ const checkJWT = (req: express.Request, res: express.Response, next: express.Nex
                 next();
             } else {
                 /* if there is no signed cookies, and checking loginstatus, then next */
-                if (req.params.module === 'system' && req.params.method === 'global' && req.params.function === 'LoginStatus') {
+                if (req.params.module === 'system' && req.params.method === 'application' && req.params.function === 'LoginStatus') {
                     next();
                     /* if its getting menuAuth, send empty array */
-                } else if (req.params.module === 'system' && req.params.method === 'global' && req.params.function === 'GetMenuAuth') {
+                } else if (req.params.module === 'system' && req.params.method === 'application' && req.params.function === 'GetMenuAuth') {
                     res.status(200);
                     res.send({ status: true, menuData: [] });
                 } else {
