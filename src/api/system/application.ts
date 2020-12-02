@@ -89,7 +89,7 @@ class Global {
                     accessmode: 0,
                 },
                 {
-                    group: 'Time & Attendance',
+                    group: 'Attendance',
                     groupid: 'attendance',
                     id: 'attendance',
                     icon: 'fas fa-clock',
@@ -101,7 +101,7 @@ class Global {
                     accessmode: 0,
                 },
                 {
-                    group: 'Time & Attendance',
+                    group: 'Attendance',
                     groupid: 'attendance',
                     id: 'attendance',
                     icon: 'fas fa-clock',
