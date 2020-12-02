@@ -10,7 +10,7 @@ import database from './config/database';
 import './config/env';
 import 'module-alias/register';
 
-import Core from '@system/core';
+import Base from '@system/base';
 
 const port = process.env.PORT || 5000;
 const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
@@ -55,11 +55,6 @@ const onServerListening = (app: Express) => {
 
     // application routes
     routes(app);
-
-    // global.CoreApp = Core;
-    // const __CONNECTION_COUNT__ = 1;
-    // console.log(global.__EXPRESS_APP__);
-    // global.Core = Core;
 
     console.log(`Listening on port: ${port}`);
 };
