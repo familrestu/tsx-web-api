@@ -1,14 +1,14 @@
 import express from 'express';
 
-export type ListingReturnType = {
+export type TableDataReturnType = {
     datasets: {
         header: Array<any>;
         body: Array<any>;
     };
 };
 
-class Core {
-    Listing(req: express.Request): ListingReturnType {
+class Base {
+    TableData(req: express.Request): TableDataReturnType {
         return {
             datasets: {
                 header: ['date', 'start_time', 'end_time'],
@@ -22,4 +22,4 @@ class Core {
     }
 }
 
-export default Core;
+export default Base;
