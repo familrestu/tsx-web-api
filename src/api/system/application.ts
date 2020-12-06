@@ -124,6 +124,18 @@ class Global {
                     isGlobal: 'Yes',
                     accessmode: 0,
                 },
+                {
+                    group: 'Components',
+                    groupid: 'components',
+                    id: 'calendar',
+                    icon: 'fas fa-calendar',
+                    name: 'Calendar',
+                    link: '/components/calendar',
+                    componentPath: '/components/CalendarScreen',
+                    isMenu: 'Yes',
+                    isGlobal: 'Yes',
+                    accessmode: 0,
+                },
             ],
         };
         /* return [
