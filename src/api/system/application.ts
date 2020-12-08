@@ -226,6 +226,17 @@ class Global {
         ]; */
     }
 
+    GetHoliday() {
+        return {
+            holiday: [
+                { date: '25-12-YYYY', name: 'Christmas Eve' },
+                { date: '31-12-YYYY', name: 'New Years Eve' },
+                { date: '01-01-YYYY', name: 'New Years Eve' },
+                { date: '17-08-YYYY', name: 'Indonesian Independance Day' },
+            ],
+        };
+    }
+
     LoginStatus(req: express.Request, res: express.Response) {
         let result: any = {
             loginStatus: false,
