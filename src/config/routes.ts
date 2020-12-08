@@ -88,8 +88,15 @@ const checkJWT = (req: express.Request, res: express.Response, next: express.Nex
                 }
             }
         } catch (error) {
-            res.status(403);
-            res.send({ error: error.code, message: error.message });
+            if (error.name === 'TokenExpiredError') {
+                res.status(200);
+                res.clearCookie('jwt');
+                res.clearCookie('uuid');
+                res.send({ error: error.code, message: error.message, stack: error });
+            } else {
+                res.status(403);
+                res.send({ error: error.code, message: error.message, stack: error });
+            }
         }
     }
 };
