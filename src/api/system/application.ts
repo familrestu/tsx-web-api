@@ -2,6 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import { v5 as uuidv5 } from 'uuid';
 import hash from 'hash.js';
+import moment from 'moment';
 
 import { query } from '@database';
 
@@ -238,7 +239,11 @@ class Global {
     }
 
     LoginStatus(req: express.Request, res: express.Response) {
-        let result: any = {
+        let result: {
+            loginStatus: boolean;
+            error?: TypeError;
+            message?: string;
+        } = {
             loginStatus: false,
         };
 
@@ -247,20 +252,24 @@ class Global {
                 const jwtSignature = hash.sha256().update(`${req.signedCookies.uuid}${process.env.JWT_KEY}`).digest('hex');
                 const decoded: any = jwt.verify(req.signedCookies.jwt, jwtSignature);
 
-                const now = Date.now();
-                const exp = decoded.exp * 1000;
-
-                // console.log(exp - now, new Date(exp), new Date(now));
-
-                result = { ...result, ...decoded.data, /* exp, now, */ loginStatus: true };
+                result = { ...result, ...decoded.data, loginStatus: true };
             } catch (error) {
                 result.loginStatus = false;
                 result.error = error;
                 result.message = error.message;
             }
+        } else {
+            result.loginStatus = false;
+            result.message = 'JWTNoExists';
         }
 
         return { ...result };
+    }
+
+    GetToken(req: express.Request) {
+        const result = {};
+
+        return result;
     }
 
     Logout(req: express.Request, res: express.Response) {
