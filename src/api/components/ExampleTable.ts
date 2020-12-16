@@ -22,6 +22,16 @@ class ExampleTable extends Base {
                             .format('YYYY-MM-DD')
                             .toString(),
                     );
+                } else if (i === 4) {
+                    const start = new Date(2020, 1, 1);
+                    const end = new Date();
+                    tempArrBody.push(
+                        moment(new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())))
+                            .format('HH:mm')
+                            .toString(),
+                    );
+                } else if (i === 5) {
+                    tempArrBody.push((Math.floor(Math.random() * 1000000) + 1000).toString());
                 } else {
                     tempArrBody.push('Lorem Ipsum');
                 }
