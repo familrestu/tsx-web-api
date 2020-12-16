@@ -319,7 +319,7 @@ class Global {
                 console.log(`user_id: ${decoded.data.user_id}, app_id: ${decoded.data.app_id}, available: ${(tokenTimeLeft / 60).toFixed(2)} minutes left`);
 
                 /* 10 sec left, then renew token */
-                if (tokenTimeLeft < 10) {
+                if (tokenTimeLeft >= 10 && tokenTimeLeft <= 20) {
                     this.SetJWT(req, res, decoded.data);
                     result.refreshToken = true;
                 }
