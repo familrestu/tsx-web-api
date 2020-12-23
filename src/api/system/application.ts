@@ -327,9 +327,13 @@ class Global {
                 result.loginStatus = true;
             }
         } catch (error) {
+            console.log(error);
             result.loginStatus = false;
             result.error = error;
             result.message = error.message;
+
+            res.clearCookie('jwt');
+            res.clearCookie('uuid');
         }
 
         return result;
