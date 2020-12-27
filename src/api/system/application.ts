@@ -316,10 +316,10 @@ class Global {
                 const expiredAt = moment(decoded.exp * 1000);
                 const tokenTimeLeft = Math.round(expiredAt.diff(currentTime) / 1000);
 
-                console.log(`user_id: ${decoded.data.user_id}, app_id: ${decoded.data.app_id}, available: ${(tokenTimeLeft / 60).toFixed(2)} minutes left`);
+                console.log(`user_id: ${decoded.data.user_id}, app_id: ${decoded.data.app_id}, available: ${tokenTimeLeft.toFixed(2)} seconds left`);
 
-                /* 10 sec left, then renew token */
-                if (tokenTimeLeft >= 10 && tokenTimeLeft <= 20) {
+                /* renew token on range 0 to 20 seconds */
+                if (tokenTimeLeft >= 0 && tokenTimeLeft <= 20) {
                     this.SetJWT(req, res, decoded.data);
                     result.refreshToken = true;
                 }
