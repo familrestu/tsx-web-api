@@ -1,6 +1,6 @@
 {
-  "name": "api.ersys.com",
-  "version": "0.2.0",
+  "name": "familrestu-api",
+  "version": "0.2.1",
   "main": "src/main.ts",
   "private": true,
   "dependencies": {
