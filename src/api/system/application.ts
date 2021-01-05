@@ -7,32 +7,25 @@ import moment from 'moment';
 import { query } from '@database';
 
 type JWTPayloadType = {
-    // user_id: number;
-    // app_id: number;
-    // activated_app: string[];
-    // default_app: string;
-    // current_app: string;
-    // username: string;
-    // email: string;
-    // full_name: string;
     [key: string]: string | string[] | number | number[];
 };
 
+type MenuDataType = {
+    group: string | null;
+    groupid: string | null;
+    id: string;
+    icon: string | null;
+    name: string;
+    link: string;
+    componentPath?: string;
+    isMenu: 0 | 1 | 'No' | 'Yes';
+    isGlobal: 0 | 1 | 'No' | 'Yes';
+    accessmode?: 0 | 1 | 2 | 3 | 'read' | 'write' | 'update' | 'delete';
+    children?: MenuDataType[];
+};
+
 type MenuAuthReturnType = {
-    menuData: {
-        group: string | null;
-        groupid: string | null;
-        id: string;
-        icon: string | null;
-        name: string;
-        link: string;
-        componentPath?: string;
-        isMenu: 0 | 1 | 'No' | 'Yes';
-        isGlobal: 0 | 1 | 'No' | 'Yes';
-        accessmode?: 0 | 1 | 2 | 3 | 'read' | 'write' | 'update' | 'delete';
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        children?: any;
-    }[];
+    menuData: MenuDataType[];
 };
 
 type AuthReturnType = {
@@ -80,26 +73,8 @@ class Global {
                 username: 'famil.restu',
                 email: 'famil.restu@ersys.com',
                 full_name: 'Famil Restu Pambudi',
-                // profile_picture: 'https://lh3.googleusercontent.com/ogw/ADGmqu8Xth9CuZj0MrKx-cdFhmJXKFCCr9eEwgIy4qci1A=s83-c-mo',
+                profile_picture: 'https://lh3.googleusercontent.com/ogw/ADGmqu8Xth9CuZj0MrKx-cdFhmJXKFCCr9eEwgIy4qci1A=s83-c-mo',
             };
-
-            // const expiredNumber = 60 * 60;
-            // const iat = Math.floor(Date.now() / 1000);
-            // const exp = Date.now() / 1000 + expiredNumber;
-            // const uuid = uuidv5(iat.toString(), `${process.env.UUID_NAMESPACE as string}`);
-            // const jwtSignature = hash.sha256().update(`${uuid}${process.env.JWT_KEY}`).digest('hex');
-            // const jwtPayload = {
-            //     // user_id: data.user_id,
-            //     iss: req.headers.host,
-            //     sub: data.username || data.email,
-            //     data,
-            //     iat,
-            //     exp: Math.floor(exp),
-            // };
-            // result.jwt = jwt.sign(jwtPayload, jwtSignature);
-            // res.cookie('jwt', jwtString, { httpOnly: true, signed: true, sameSite: 'lax', expires: new Date(Date.now() + expiredNumber * 1000) });
-            // res.cookie('uuid', uuid, { httpOnly: true, signed: true, sameSite: 'lax', expires: new Date(Date.now() + expiredNumber * 1000) });
-            // result = { ...result, ...data, uuid };
 
             this.SetJWT(req, res, data);
             result.loginStatus = true;
@@ -191,6 +166,130 @@ class Global {
                     name: 'button',
                     link: '/bootstrap/button',
                     componentPath: '/bootstrap/ButtonScreen',
+                    isMenu: 'Yes',
+                    isGlobal: 'Yes',
+                    accessmode: 0,
+                },
+                {
+                    group: 'Nested',
+                    groupid: 'Nested',
+                    id: 'nested',
+                    icon: null,
+                    name: 'Parent 1',
+                    link: '/nested/parent1',
+                    componentPath: '/nested/Parent1Screen',
+                    isMenu: 'Yes',
+                    isGlobal: 'Yes',
+                    accessmode: 0,
+                    children: [
+                        {
+                            group: 'Nested Children 1',
+                            groupid: 'NestedChildren',
+                            id: 'nestedChildren1',
+                            icon: null,
+                            name: 'Nested Children 1',
+                            link: '/nested/parent1/nestedchildren1',
+                            componentPath: '/nested/Parent1/NestedChildren1Screen',
+                            isMenu: 'Yes',
+                            isGlobal: 'Yes',
+                            accessmode: 0,
+                        },
+                        {
+                            group: 'Nested Children 1',
+                            groupid: 'NestedChildren',
+                            id: 'nestedChildren2',
+                            icon: null,
+                            name: 'Nested Children 2',
+                            link: '/nested/parent1/nestedchildren2',
+                            componentPath: '/nested/Parent1/NestedChildren2Screen',
+                            isMenu: 'Yes',
+                            isGlobal: 'Yes',
+                            accessmode: 0,
+                        },
+                        {
+                            group: 'Nested Children With Parent',
+                            groupid: 'NestedChildrenWithParent',
+                            id: 'nestedChildrenWithParent',
+                            icon: null,
+                            name: 'Nested Children With Parent 1',
+                            link: 'null',
+                            componentPath: 'null',
+                            isMenu: 'Yes',
+                            isGlobal: 'Yes',
+                            accessmode: 0,
+                            children: [
+                                {
+                                    group: 'Nested Children 1',
+                                    groupid: 'NestedChildrenWithParentChildren1',
+                                    id: 'NestedChildrenWithParentChildren1',
+                                    icon: null,
+                                    name: 'Nested Children With Parent 1 Children 1',
+                                    link: '/nested/parent1/nested1',
+                                    componentPath: '/nested/Parent1/NestedChildrenWithParentScreen',
+                                    isMenu: 'Yes',
+                                    isGlobal: 'Yes',
+                                    accessmode: 0,
+                                },
+                                {
+                                    group: 'Nested Children 1',
+                                    groupid: 'NestedChildrenWithParentChildren2',
+                                    id: 'NestedChildrenWithParentChildren2',
+                                    icon: null,
+                                    name: 'Nested Children With Parent 1 Children 2',
+                                    link: '/nested/parent1/nested2',
+                                    componentPath: '/nested/Parent1/NestedChildrenWithParentScreen',
+                                    isMenu: 'Yes',
+                                    isGlobal: 'Yes',
+                                    accessmode: 0,
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    group: 'Nested',
+                    groupid: 'Nested',
+                    id: 'nested',
+                    icon: null,
+                    name: 'Parent 2',
+                    link: '/nested/parent2',
+                    componentPath: '/nested/Parent2Screen',
+                    isMenu: 'Yes',
+                    isGlobal: 'Yes',
+                    accessmode: 0,
+                },
+                {
+                    group: 'Nested',
+                    groupid: 'Nested',
+                    id: 'nested',
+                    icon: null,
+                    name: 'Parent 3',
+                    link: '/nested/parent3',
+                    componentPath: '/nested/Parent3Screen',
+                    isMenu: 'Yes',
+                    isGlobal: 'Yes',
+                    accessmode: 0,
+                },
+                {
+                    group: 'Nested',
+                    groupid: 'Nested',
+                    id: 'nested',
+                    icon: null,
+                    name: 'Parent 4',
+                    link: '/nested/parent4',
+                    componentPath: '/nested/Parent4Screen',
+                    isMenu: 'Yes',
+                    isGlobal: 'Yes',
+                    accessmode: 0,
+                },
+                {
+                    group: 'Nested',
+                    groupid: 'Nested',
+                    id: 'nested',
+                    icon: null,
+                    name: 'Parent 5',
+                    link: '/nested/parent5',
+                    componentPath: '/nested/Parent5Screen',
                     isMenu: 'Yes',
                     isGlobal: 'Yes',
                     accessmode: 0,
