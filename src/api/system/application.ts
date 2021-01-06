@@ -51,8 +51,8 @@ class Global {
             exp: Math.floor(exp),
         };
 
-        res.cookie('jwt', jwt.sign(jwtPayload, jwtSignature), { httpOnly: true, signed: true, sameSite: 'lax', expires: new Date(Date.now() + expiredNumber * 1000) });
-        res.cookie('uuid', uuid, { httpOnly: true, signed: true, sameSite: 'lax', expires: new Date(Date.now() + expiredNumber * 1000) });
+        res.cookie('jwt', jwt.sign(jwtPayload, jwtSignature), { httpOnly: true, signed: true, sameSite: 'none', secure: true, expires: new Date(Date.now() + expiredNumber * 1000) });
+        res.cookie('uuid', uuid, { httpOnly: true, signed: true, sameSite: 'none', secure: true, expires: new Date(Date.now() + expiredNumber * 1000) });
     }
 
     Login(req: express.Request, res: express.Response) {
