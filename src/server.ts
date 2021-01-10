@@ -5,12 +5,12 @@ import { Express } from 'express-serve-static-core';
 
 import routes from './config/routes';
 import middlewares from './config/middlewares';
-import database from './config/database';
+
+// import database from './config/database';
+// import Base from '@system/base';
 
 import './config/env';
 import 'module-alias/register';
-
-import Base from '@system/base';
 
 const port = process.env.PORT || 5000;
 const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
@@ -18,11 +18,11 @@ const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 (async () => {
     const app = express();
 
-    await database();
+    // await database();
 
     try {
         app.listen(port)
-            // .on('error', (err: NodeJS.ErrnoException) => () => onErrorServer(err))
+            .on('error', (err: NodeJS.ErrnoException) => () => onErrorServer(err))
             .on('listening', () => onServerListening(app));
     } catch (error) {
         console.log(error.message);

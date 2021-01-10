@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { CookieOptions } from 'express';
 import jwt from 'jsonwebtoken';
 import { v5 as uuidv5 } from 'uuid';
 import hash from 'hash.js';
@@ -51,8 +51,28 @@ class Global {
             exp: Math.floor(exp),
         };
 
-        res.cookie('jwt', jwt.sign(jwtPayload, jwtSignature), { httpOnly: true, signed: true, sameSite: 'none', secure: true, expires: new Date(Date.now() + expiredNumber * 1000) });
-        res.cookie('uuid', uuid, { httpOnly: true, signed: true, sameSite: 'none', secure: true, expires: new Date(Date.now() + expiredNumber * 1000) });
+        let cookeiConfig: CookieOptions;
+        const cookieExp = new Date(Date.now() + expiredNumber * 1000);
+
+        if (process.env.NODE_ENV || 'development') {
+            cookeiConfig = {
+                httpOnly: true,
+                signed: true,
+                sameSite: 'lax',
+                expires: cookieExp,
+            };
+        } else {
+            cookeiConfig = {
+                httpOnly: true,
+                signed: true,
+                sameSite: 'none',
+                secure: true,
+                expires: cookieExp,
+            };
+        }
+
+        res.cookie('jwt', jwt.sign(jwtPayload, jwtSignature), cookeiConfig);
+        res.cookie('uuid', uuid, cookeiConfig);
     }
 
     Login(req: express.Request, res: express.Response) {

@@ -1,6 +1,7 @@
 import { Express } from 'express-serve-static-core';
 import packagejson from '../../package.json';
 import express from 'express';
+import jspath from 'path';
 
 import jwt from 'jsonwebtoken';
 import hash from 'hash.js';
@@ -28,8 +29,11 @@ const routes = (app: Express): void => {
         }
 
         try {
+            // const apipath = `../api/${path}`;
+            const apipath = jspath.join(__dirname, '../api/', path);
+            // console.log(jspath.resolve());
             // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const api = require(`../api/${path}`).default;
+            const api = require(apipath).default;
             const result = api[req.params.function](req, res);
 
             res.send({
@@ -39,6 +43,7 @@ const routes = (app: Express): void => {
         } catch (error) {
             res.status(500);
             res.send({ error: `Function ${req.params.function} not found`, status: false, stack: error.message });
+            // console.log(error);
         }
     });
 
@@ -84,7 +89,7 @@ const checkJWT = (req: express.Request, res: express.Response, next: express.Nex
                 } else {
                     /* else, then this guy is not authorized */
                     res.status(500);
-                    res.send({ error: 'JwtNoExists', message: 'You are not authorized' });
+                    res.send({ error: 'NotAuthorized', message: 'You are not authorized' });
                 }
             }
         } catch (error) {
