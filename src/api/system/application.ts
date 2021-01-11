@@ -54,7 +54,7 @@ class Global {
         let cookeiConfig: CookieOptions;
         const cookieExp = new Date(Date.now() + expiredNumber * 1000);
 
-        if (process.env.NODE_ENV || 'development') {
+        if (process.env.NODE_ENV === 'development') {
             cookeiConfig = {
                 httpOnly: true,
                 signed: true,
