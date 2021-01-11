@@ -57,4 +57,5 @@ const onServerListening = (app: Express) => {
     routes(app);
 
     console.log(`Listening on port: ${port}`);
+    console.log(process.env);
 };

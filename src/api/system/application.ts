@@ -80,10 +80,7 @@ class Global {
             status: false,
         };
 
-        if (
-            (req.body.email === 'famil.restu@ersys.com' && req.body.password === 'password') ||
-            (req.body.is_accountcode !== undefined && req.body.username === 'famil.restu' && req.body.password === 'password')
-        ) {
+        if ((req.body.email === 'dev@ersys.com' && req.body.password === 'password') || (req.body.is_accountcode !== undefined && req.body.username === 'dev' && req.body.password === 'password')) {
             const data: JWTPayloadType = {
                 user_id: 1,
                 app_id: 1,
