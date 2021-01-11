@@ -222,7 +222,7 @@ class Global {
                 const expiredAt = moment(decoded.exp * 1000);
                 const tokenTimeLeft = Math.round(expiredAt.diff(currentTime) / 1000);
 
-                console.log(`user_id: ${decoded.data.user_id}, app_id: ${decoded.data.app_id}, available: ${tokenTimeLeft.toFixed(2)} seconds left`);
+                // console.log(`user_id: ${decoded.data.user_id}, app_id: ${decoded.data.app_id}, available: ${tokenTimeLeft.toFixed(2)} seconds left`);
 
                 /* renew token on range 0 to 20 seconds */
                 if (tokenTimeLeft >= 0 && tokenTimeLeft <= 20) {
@@ -233,7 +233,7 @@ class Global {
                 result.loginStatus = true;
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             result.loginStatus = false;
             result.error = error;
             result.message = error.message;
