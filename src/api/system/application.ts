@@ -248,7 +248,7 @@ class Global {
     Logout(req: express.Request, res: express.Response) {
         res.clearCookie('jwt');
         res.clearCookie('uuid');
-        return { loginStatus: true };
+        return { loginStatus: false };
     }
 }
 
