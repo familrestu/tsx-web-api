@@ -35,9 +35,29 @@ type AuthReturnType = {
     message?: string;
 };
 
+const expiredNumber = 15 * 60;
+const cookieExp = new Date(Date.now() + expiredNumber * 1000);
+let cookeiConfig: CookieOptions;
+
+if (process.env.NODE_ENV === 'development') {
+    cookeiConfig = {
+        httpOnly: true,
+        signed: true,
+        sameSite: 'lax',
+        expires: cookieExp,
+    };
+} else {
+    cookeiConfig = {
+        httpOnly: true,
+        signed: true,
+        sameSite: 'none',
+        secure: true,
+        expires: cookieExp,
+    };
+}
+
 class Global {
     SetJWT(req: express.Request, res: express.Response, data: JWTPayloadType) {
-        const expiredNumber = 15 * 60;
         const iat = Math.floor(Date.now() / 1000);
         const exp = Date.now() / 1000 + expiredNumber;
         const uuid = uuidv5(iat.toString(), `${process.env.UUID_NAMESPACE as string}`);
@@ -50,26 +70,6 @@ class Global {
             iat,
             exp: Math.floor(exp),
         };
-
-        let cookeiConfig: CookieOptions;
-        const cookieExp = new Date(Date.now() + expiredNumber * 1000);
-
-        if (process.env.NODE_ENV === 'development') {
-            cookeiConfig = {
-                httpOnly: true,
-                signed: true,
-                sameSite: 'lax',
-                expires: cookieExp,
-            };
-        } else {
-            cookeiConfig = {
-                httpOnly: true,
-                signed: true,
-                sameSite: 'none',
-                secure: true,
-                expires: cookieExp,
-            };
-        }
 
         res.cookie('jwt', jwt.sign(jwtPayload, jwtSignature), cookeiConfig);
         res.cookie('uuid', uuid, cookeiConfig);
@@ -246,9 +246,9 @@ class Global {
     }
 
     Logout(req: express.Request, res: express.Response) {
-        res.clearCookie('jwt');
-        res.clearCookie('uuid');
-        return { loginStatus: false };
+        res.clearCookie('jwt', cookeiConfig);
+        res.clearCookie('uuid', cookeiConfig);
+        return { loginStatus: false, message: 'Successfully logout' };
     }
 }
 
