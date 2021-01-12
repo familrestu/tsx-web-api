@@ -29,9 +29,8 @@ const routes = (app: Express): void => {
         }
 
         try {
-            // const apipath = `../api/${path}`;
             const apipath = jspath.join(__dirname, '../api/', path);
-            // console.log(jspath.resolve());
+            console.log(apipath);
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const api = require(apipath).default;
             const result = api[req.params.function](req, res);

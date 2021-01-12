@@ -26,11 +26,12 @@
   },
   "scripts": {
     "heroku": "NODE_ENV=production node build/src/server.js",
-    "start": "set NODE_ENV=production&& node build/src/server.js",
-    "dev": "set NODE_ENV=development&& nodemon src/server.ts",
+    "start": "set NODE_ENV=development&& node -r ./production-path.js ./build/src/server.js",
+    "dev": "set NODE_ENV=development&& ts-node-dev -r tsconfig-paths/register --respawn --transpile-only ./src/server.ts",
     "tsc": "tsc --init",
     "build": "rm -rf build && tsc",
-    "lint": "eslint . --ext .ts,.tsx --quiet --fix"
+    "lint": "eslint . --ext .ts,.tsx --quiet --fix",
+    "testprod": "yarn build && set NODE_ENV=development&& ts-node-dev -r tsconfig-paths/register --respawn --transpile-only ./build/src/server.js"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -60,10 +61,7 @@
     "prettier": "^2.1.2",
     "supertest": "^5.0.0",
     "ts-node": "^9.0.0",
+    "ts-node-dev": "^1.1.1",
     "tsconfig-paths": "^3.9.0"
-  },
-  "_moduleAliases": {
-    "@system": "./build/src/api/system",
-    "@database": "./build/src/config/database.ts"
   }
 }
