@@ -32,7 +32,14 @@ const allMiddleware = (app: Express): void => {
     app.use(cookieParser('secret'));
 
     app.use((req, res, next) => {
-        res.header('Access-Control-Allow-Origin', `${process.env.ALLOWED_HOST}`); // update to match the domain you will make the request from
+        const reqOrigin = req.get('origin');
+        let allowOrigin = '';
+
+        if (reqOrigin !== undefined) {
+            allowOrigin = arrAllowedHost.indexOf(reqOrigin) >= 0 ? arrAllowedHost[arrAllowedHost.indexOf(reqOrigin)] : 'Block';
+        }
+
+        res.header('Access-Control-Allow-Origin', `${allowOrigin}`); // update to match the domain you will make the request from
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
         next();
     });
