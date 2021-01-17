@@ -35,8 +35,6 @@ type AuthReturnType = {
     message?: string;
 };
 
-const expiredNumber = 15 * 60;
-const cookieExp = new Date(Date.now() + expiredNumber * 1000);
 let cookeiConfig: CookieOptions;
 
 if (process.env.NODE_ENV === 'development') {
@@ -44,7 +42,6 @@ if (process.env.NODE_ENV === 'development') {
         httpOnly: true,
         signed: true,
         sameSite: 'lax',
-        expires: cookieExp,
     };
 } else {
     cookeiConfig = {
@@ -52,12 +49,14 @@ if (process.env.NODE_ENV === 'development') {
         signed: true,
         sameSite: 'none',
         secure: true,
-        expires: cookieExp,
     };
 }
 
 class Global {
     SetJWT(req: express.Request, res: express.Response, data: JWTPayloadType) {
+        const expiredNumber = 15 * 60;
+        const cookieExp = new Date(Date.now() + expiredNumber * 1000);
+
         const iat = Math.floor(Date.now() / 1000);
         const exp = Date.now() / 1000 + expiredNumber;
         const uuid = uuidv5(iat.toString(), `${process.env.UUID_NAMESPACE as string}`);
@@ -70,6 +69,8 @@ class Global {
             iat,
             exp: Math.floor(exp),
         };
+
+        cookeiConfig.expires = cookieExp;
 
         res.cookie('jwt', jwt.sign(jwtPayload, jwtSignature), cookeiConfig);
         res.cookie('uuid', uuid, cookeiConfig);
@@ -100,7 +101,7 @@ class Global {
         return { ...result };
     }
 
-    GetMenuAuth(): MenuAuthReturnType {
+    GetMenuAuth_DEV(): MenuAuthReturnType {
         return {
             menuData: [
                 {
@@ -167,6 +168,49 @@ class Global {
         };
     }
 
+    GetMenuAuth(): MenuAuthReturnType {
+        return {
+            menuData: [
+                {
+                    group: null,
+                    groupid: null,
+                    id: 'profile',
+                    icon: null,
+                    name: 'Profile',
+                    link: '/profile',
+                    componentPath: '/profile/ProfileScreen',
+                    isMenu: 'No',
+                    isGlobal: 'Yes',
+                    accessmode: 0,
+                },
+                {
+                    group: 'Employee',
+                    groupid: 'employee',
+                    id: 'employee',
+                    icon: 'fas fa-users',
+                    name: 'Employee Lists',
+                    link: '/employee/list',
+                    componentPath: '/employee/EmployeeListScreen',
+                    isMenu: 'Yes',
+                    isGlobal: 'No',
+                    accessmode: 0,
+                },
+                {
+                    group: 'Employee',
+                    groupid: 'employee',
+                    id: 'employee',
+                    icon: 'fas fa-users',
+                    name: 'Employee Lists',
+                    link: '/employee/list/details/:employee_no',
+                    componentPath: '/employee/EmployeeListDetailScreen',
+                    isMenu: 'No',
+                    isGlobal: 'No',
+                    accessmode: 0,
+                },
+            ],
+        };
+    }
+
     GetHoliday() {
         return {
             holiday: [
@@ -174,6 +218,15 @@ class Global {
                 { date: '31-12-YYYY', name: 'New Years Eve' },
                 { date: '01-01-YYYY', name: 'New Years Eve' },
                 { date: '17-08-YYYY', name: 'Indonesian Independance Day' },
+                { date: '01-05-YYYY', name: 'International Labor Day' },
+                { date: '12-02-2021', name: 'Chinese Lunar Festival' },
+                { date: '11-03-2021', name: 'Ascension of the Prophet Muhammad' },
+                { date: '14-03-2021', name: "Bali's Day of Silence and Hindu New Year" },
+                { date: '02-04-2021', name: 'Good Friday' },
+                { date: '04-04-2021', name: 'Easter Sunday' },
+                { date: '13-05-2021', name: 'Ascension Day of Jesus Christ' },
+                { date: '13-05-2021', name: 'Idul Fitri' },
+                { date: '14-05-2021', name: 'Idul Fitri Holiday' },
             ],
         };
     }
