@@ -6,6 +6,8 @@ import jspath from 'path';
 import jwt from 'jsonwebtoken';
 import hash from 'hash.js';
 
+const apiRouting = process.env.NODE_ENV === 'development' ? '/api/:module/:method/:function' : '/:module/:method/:function';
+
 const routes = (app: Express): void => {
     app.all('/', (req, res) => {
         res.json({
@@ -15,9 +17,9 @@ const routes = (app: Express): void => {
     });
 
     /* request to api */
-    app.use('/api/:module/:method/:function', checkJWT);
+    app.use(apiRouting, checkJWT);
 
-    app.route('/api/:module/:method/:function').all((req: express.Request, res: express.Response) => {
+    app.route(apiRouting).all((req: express.Request, res: express.Response) => {
         /* load api */
         let path;
         /* appRoutes is relative to application API */
