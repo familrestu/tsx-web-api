@@ -20,7 +20,8 @@ type MenuDataType = {
     componentPath?: string;
     isMenu: 0 | 1 | 'No' | 'Yes';
     isGlobal: 0 | 1 | 'No' | 'Yes';
-    accessmode?: 0 | 1 | 2 | 3 | 'read' | 'write' | 'update' | 'delete';
+    accessmode: 0 | 1 | 2 | 3 | 'read' | 'write' | 'update' | 'delete';
+    pageType: string | 'form' | 'form-tabs' | 'table';
     children?: MenuDataType[];
 };
 
@@ -101,7 +102,7 @@ class Global {
         return { ...result };
     }
 
-    GetMenuAuth_DEV(): MenuAuthReturnType {
+    /* GetMenuAuth_DEV(): MenuAuthReturnType {
         return {
             menuData: [
                 {
@@ -166,7 +167,7 @@ class Global {
                 },
             ],
         };
-    }
+    } */
 
     GetMenuAuth(): MenuAuthReturnType {
         return {
@@ -182,6 +183,7 @@ class Global {
                     isMenu: 'No',
                     isGlobal: 'Yes',
                     accessmode: 0,
+                    pageType: 'form-tabs',
                 },
                 {
                     group: 'Employee',
@@ -194,6 +196,7 @@ class Global {
                     isMenu: 'Yes',
                     isGlobal: 'No',
                     accessmode: 0,
+                    pageType: 'table',
                 },
                 {
                     group: 'Employee',
@@ -206,6 +209,20 @@ class Global {
                     isMenu: 'No',
                     isGlobal: 'No',
                     accessmode: 0,
+                    pageType: 'form',
+                },
+                {
+                    group: 'Components',
+                    groupid: 'components',
+                    id: 'components',
+                    icon: null,
+                    name: 'Loading Suspense',
+                    link: '/components/suspense',
+                    componentPath: '/LoadingSuspenseScreen',
+                    isMenu: 'Yes',
+                    isGlobal: 'Yes',
+                    accessmode: 0,
+                    pageType: '',
                 },
             ],
         };
