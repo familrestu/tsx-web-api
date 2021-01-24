@@ -4,8 +4,6 @@ import { v5 as uuidv5 } from 'uuid';
 import hash from 'hash.js';
 import moment from 'moment';
 
-import { query } from '@database';
-
 type JWTPayloadType = {
     [key: string]: string | string[] | number | number[];
 };
@@ -17,11 +15,11 @@ type MenuDataType = {
     icon: string | null;
     name: string;
     link: string;
-    componentPath?: string;
-    isMenu: 0 | 1 | 'No' | 'Yes';
-    isGlobal: 0 | 1 | 'No' | 'Yes';
+    componentPath: string | null;
+    isMenu: 0 | 1 | 'No' | 'Yes' /* No | 0 = not showing at menu */;
+    isGlobal: 0 | 1 | 'No' | 'Yes' /* opening page didn't based on CurrentApp (menuAuthState) */;
     accessmode: 0 | 1 | 2 | 3 | 'read' | 'write' | 'update' | 'delete';
-    pageType: string | 'form' | 'form-tabs' | 'table';
+    pageType: string | 'form' | 'form-tabs' | 'table' | null;
     children?: MenuDataType[];
 };
 
@@ -212,17 +210,73 @@ class Global {
                     pageType: 'form',
                 },
                 {
+                    group: 'Employee',
+                    groupid: 'employee',
+                    id: 'employeeReport',
+                    icon: 'fas fa-clipboard-list',
+                    name: 'Employee Report',
+                    link: '/employee/report',
+                    componentPath: null,
+                    isMenu: 'Yes',
+                    isGlobal: 'No',
+                    accessmode: 0,
+                    pageType: null,
+                    children: [
+                        {
+                            group: 'Employee',
+                            groupid: 'employee',
+                            id: 'employeeReportChild',
+                            icon: 'fas fa-users',
+                            name: 'Employee Lists',
+                            link: '/employee/report/list',
+                            componentPath: '/employee/EmployeeListDetailScreen',
+                            isMenu: 'Yes',
+                            isGlobal: 'No',
+                            accessmode: 0,
+                            pageType: 'form',
+                        },
+                        {
+                            group: 'Employee',
+                            groupid: 'employee',
+                            id: 'employeeReportChild2',
+                            icon: 'fas fa-users',
+                            name: 'Employee Lists',
+                            link: '/employee/report/list',
+                            componentPath: '/employee/EmployeeListDetailScreen',
+                            isMenu: 'Yes',
+                            isGlobal: 'No',
+                            accessmode: 0,
+                            pageType: 'form',
+                            children: [
+                                {
+                                    group: 'Employee',
+                                    groupid: 'employee',
+                                    id: 'employeeReportChild3',
+                                    icon: 'fas fa-users',
+                                    name: 'Employee Lists',
+                                    link: '/employee/report/list',
+                                    componentPath: '/employee/EmployeeListDetailScreen',
+                                    isMenu: 'Yes',
+                                    isGlobal: 'No',
+                                    accessmode: 0,
+                                    pageType: 'form',
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
                     group: 'Components',
                     groupid: 'components',
                     id: 'components',
                     icon: null,
                     name: 'Loading Suspense',
-                    link: '/components/suspense',
+                    link: '/suspense',
                     componentPath: '/LoadingSuspenseScreen',
                     isMenu: 'Yes',
                     isGlobal: 'Yes',
                     accessmode: 0,
-                    pageType: '',
+                    pageType: 'form',
                 },
             ],
         };
