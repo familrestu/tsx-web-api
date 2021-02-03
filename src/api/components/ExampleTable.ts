@@ -11,7 +11,7 @@ class ExampleTable extends Base {
             arrHeader.push(`column_${i}`);
 
             const tempArrBody: string[] & Date[] = [];
-            for (let x = 0; x < 50; x++) {
+            for (let x = 0; x < 100; x++) {
                 if (i === 2) {
                     tempArrBody.push(x % 2 === 0 ? 'A' : 'B');
                 } else if (i === 3) {
