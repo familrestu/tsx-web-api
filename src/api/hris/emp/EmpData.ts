@@ -245,7 +245,7 @@ const datasets = {
 };
 
 class Data extends Base {
-    TableData(req: express.Request): TableDataReturnType {
+    TableData(): TableDataReturnType {
         return {
             datasets,
         };

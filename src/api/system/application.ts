@@ -4,6 +4,8 @@ import { v5 as uuidv5 } from 'uuid';
 import hash from 'hash.js';
 import moment from 'moment';
 
+import emp from '../hris/emp/EmpData';
+
 type JWTPayloadType = {
     [key: string]: string | string[] | number | number[];
 };
@@ -201,69 +203,13 @@ class Global {
                     groupid: 'employee',
                     id: 'employee',
                     icon: 'fas fa-users',
-                    name: 'Employee Lists',
+                    name: 'Employee Details',
                     link: '/employee/list/details/:employee_no',
                     componentPath: '/employee/EmployeeListDetailScreen',
                     isMenu: 'No',
                     isGlobal: 'No',
                     accessmode: 0,
                     pageType: 'form',
-                },
-                {
-                    group: 'Employee',
-                    groupid: 'employee',
-                    id: 'employeeReport',
-                    icon: 'fas fa-clipboard-list',
-                    name: 'Employee Report',
-                    link: '/employee/report',
-                    componentPath: null,
-                    isMenu: 'Yes',
-                    isGlobal: 'No',
-                    accessmode: 0,
-                    pageType: null,
-                    children: [
-                        {
-                            group: 'Employee',
-                            groupid: 'employee',
-                            id: 'employeeReportChild',
-                            icon: 'fas fa-users',
-                            name: 'Employee Lists',
-                            link: '/employee/report/list',
-                            componentPath: '/employee/EmployeeListDetailScreen',
-                            isMenu: 'Yes',
-                            isGlobal: 'No',
-                            accessmode: 0,
-                            pageType: 'form',
-                        },
-                        {
-                            group: 'Employee',
-                            groupid: 'employee',
-                            id: 'employeeReportChild2',
-                            icon: 'fas fa-users',
-                            name: 'Employee Lists',
-                            link: '/employee/report/list',
-                            componentPath: '/employee/EmployeeListDetailScreen',
-                            isMenu: 'Yes',
-                            isGlobal: 'No',
-                            accessmode: 0,
-                            pageType: 'form',
-                            children: [
-                                {
-                                    group: 'Employee',
-                                    groupid: 'employee',
-                                    id: 'employeeReportChild3',
-                                    icon: 'fas fa-users',
-                                    name: 'Employee Lists',
-                                    link: '/employee/report/list',
-                                    componentPath: '/employee/EmployeeListDetailScreen',
-                                    isMenu: 'Yes',
-                                    isGlobal: 'No',
-                                    accessmode: 0,
-                                    pageType: 'form',
-                                },
-                            ],
-                        },
-                    ],
                 },
                 {
                     group: 'Components',
@@ -399,6 +345,32 @@ class Global {
         res.clearCookie('jwt', cookeiConfig);
         res.clearCookie('uuid', cookeiConfig);
         return { loginStatus: false, message: 'Successfully logout' };
+    }
+
+    GetSearch(req: express.Request, res: express.Response) {
+        type SearchDetails = {
+            link: string;
+            title: string;
+            type: string;
+            params?: { [key: string]: string };
+        };
+
+        const { datasets } = emp.TableData();
+        const arrReturn: SearchDetails[] = [];
+        const fullNameIndex = datasets.header.indexOf('full_name');
+        const empNoIndex = datasets.header.indexOf('employee_no');
+
+        for (let i = 0; i < datasets.body[empNoIndex].length; i++) {
+            const empno = datasets.body[empNoIndex][i];
+            const fullname = datasets.body[fullNameIndex][i];
+            arrReturn.push({
+                link: `/employee/list/details/${empno}`,
+                title: `${fullname} (${empno})`,
+                type: 'employee',
+            });
+        }
+
+        return { data: arrReturn, datasets };
     }
 }
 
