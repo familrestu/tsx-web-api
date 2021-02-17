@@ -195,7 +195,7 @@ class Global {
                     componentPath: '/profile/PersonalInfoTab',
                     isMenu: 'No',
                     isGlobal: 'Yes',
-                    accessmode: 0,
+                    accessmode: 3,
                     pageType: 'form-tabs',
                 },
                 {
