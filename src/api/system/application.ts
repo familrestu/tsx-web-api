@@ -102,87 +102,34 @@ class Global {
         return { ...result };
     }
 
-    /* GetMenuAuth_DEV(): MenuAuthReturnType {
-        return {
-            menuData: [
-                {
-                    group: null,
-                    groupid: null,
-                    id: 'profile',
-                    icon: null,
-                    name: 'Profile',
-                    link: '/profile',
-                    componentPath: '/profile/ProfileScreen',
-                    isMenu: 'No',
-                    isGlobal: 'Yes',
-                    accessmode: 0,
-                },
-                {
-                    group: 'Attendance',
-                    groupid: 'attendance',
-                    id: 'attendance',
-                    icon: 'fas fa-clock',
-                    name: 'Attendance Data',
-                    link: '/attendance/attendancedata',
-                    componentPath: '/attendance/AttendanceDataScreen',
-                    isMenu: 'Yes',
-                    isGlobal: 'No',
-                    accessmode: 0,
-                },
-                {
-                    group: 'Attendance',
-                    groupid: 'attendance',
-                    id: 'attendance',
-                    icon: 'fas fa-clock',
-                    name: 'Attendance Data',
-                    link: '/attendance/attendancedata/details/:date',
-                    componentPath: '/attendance/AttendanceDataDetailsScreen',
-                    isMenu: 'No',
-                    isGlobal: 'No',
-                    accessmode: 0,
-                },
-                {
-                    group: 'Components',
-                    groupid: 'components',
-                    id: 'components',
-                    icon: 'fas fa-table',
-                    name: 'Table',
-                    link: '/components/table',
-                    componentPath: '/components/TableScreen',
-                    isMenu: 'Yes',
-                    isGlobal: 'Yes',
-                    accessmode: 0,
-                },
-                {
-                    group: 'Components',
-                    groupid: 'components',
-                    id: 'calendar',
-                    icon: 'fas fa-calendar-day',
-                    name: 'Calendar',
-                    link: '/components/calendar',
-                    componentPath: '/components/CalendarScreen',
-                    isMenu: 'Yes',
-                    isGlobal: 'Yes',
-                    accessmode: 0,
-                },
-            ],
-        };
-    } */
-
     GetMenuAuth(): MenuAuthReturnType {
         return {
             menuData: [
                 {
                     group: null,
                     groupid: null,
+                    id: 'dashboard',
+                    icon: 'fas fa-tachometer-alt',
+                    name: 'Dashboard',
+                    link: '/',
+                    componentPath: '/',
+                    isMenu: 'No',
+                    isGlobal: 'No',
+                    accessmode: 1,
+                    pageType: 'dashboard',
+                },
+
+                {
+                    group: null,
+                    groupid: null,
                     id: 'profile',
                     icon: null,
                     name: 'Profile',
                     link: '/profile',
-                    componentPath: '/profile/ProfileScreen',
+                    componentPath: '/profile/',
                     isMenu: 'No',
                     isGlobal: 'Yes',
-                    accessmode: 1,
+                    accessmode: 3,
                     pageType: 'form-tabs',
                 },
                 {
@@ -192,7 +139,20 @@ class Global {
                     icon: null,
                     name: 'Profile | Personal Info',
                     link: '/profile/personal-information',
-                    componentPath: '/profile/PersonalInfoTab',
+                    componentPath: '/profile/personal-information',
+                    isMenu: 'No',
+                    isGlobal: 'Yes',
+                    accessmode: 0,
+                    pageType: 'form-tabs',
+                },
+                {
+                    group: null,
+                    groupid: null,
+                    id: 'profile-account-info',
+                    icon: null,
+                    name: 'Profile | Account Info',
+                    link: '/profile/account-information',
+                    componentPath: '/profile/account-information',
                     isMenu: 'No',
                     isGlobal: 'Yes',
                     accessmode: 3,
@@ -204,11 +164,11 @@ class Global {
                     id: 'employee',
                     icon: 'fas fa-users',
                     name: 'Employee Lists',
-                    link: '/employee/list',
-                    componentPath: '/employee/EmployeeListScreen',
+                    link: '/employee',
+                    componentPath: '/employee/',
                     isMenu: 'Yes',
                     isGlobal: 'No',
-                    accessmode: 0,
+                    accessmode: 3,
                     pageType: 'table',
                 },
                 {
@@ -217,11 +177,11 @@ class Global {
                     id: 'employee',
                     icon: 'fas fa-users',
                     name: 'Employee Details',
-                    link: '/employee/list/details/:employee_no',
-                    componentPath: '/employee/EmployeeListDetailScreen',
+                    link: '/employee/:employee_no',
+                    componentPath: '/employee/details',
                     isMenu: 'No',
                     isGlobal: 'No',
-                    accessmode: 3,
+                    accessmode: 2,
                     pageType: 'form',
                 },
                 {
@@ -231,7 +191,7 @@ class Global {
                     icon: null,
                     name: 'Loading Suspense',
                     link: '/components/suspense',
-                    componentPath: '/components/LoadingSuspenseScreen',
+                    componentPath: '/components/loadingsuspense',
                     isMenu: 'Yes',
                     isGlobal: 'Yes',
                     accessmode: 0,
@@ -244,7 +204,7 @@ class Global {
                     icon: null,
                     name: 'Modal',
                     link: '/components/modal',
-                    componentPath: '/components/ModalScreen',
+                    componentPath: '/components/modal',
                     isMenu: 'Yes',
                     isGlobal: 'Yes',
                     accessmode: 0,
@@ -257,7 +217,7 @@ class Global {
                     icon: null,
                     name: 'Table',
                     link: '/components/table',
-                    componentPath: '/components/TableScreen',
+                    componentPath: '/components/table',
                     isMenu: 'Yes',
                     isGlobal: 'Yes',
                     accessmode: 0,
@@ -363,6 +323,7 @@ class Global {
     GetSearch(req: express.Request, res: express.Response) {
         type SearchDetails = {
             link: string;
+            navlink: string;
             title: string;
             type: string;
             params?: { [key: string]: string };
@@ -377,7 +338,8 @@ class Global {
             const empno = datasets.body[empNoIndex][i];
             const fullname = datasets.body[fullNameIndex][i];
             arrReturn.push({
-                link: `/employee/list/details/${empno}`,
+                link: `/employee/${empno}`,
+                navlink: '/employee/:employee_no',
                 title: `${fullname} (${empno})`,
                 type: 'employee',
             });
