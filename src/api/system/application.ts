@@ -3,8 +3,10 @@ import jwt from 'jsonwebtoken';
 import { v5 as uuidv5 } from 'uuid';
 import hash from 'hash.js';
 import moment from 'moment';
-
+import { Pool, Client } from 'pg';
 import emp from '../hris/emp/EmpData';
+
+const pool = new Pool();
 
 type JWTPayloadType = {
     [key: string]: string | string[] | number | number[];
@@ -112,13 +114,12 @@ class Global {
                     icon: 'fas fa-tachometer-alt',
                     name: 'Dashboard',
                     link: '/',
-                    componentPath: '/',
-                    isMenu: 'No',
-                    isGlobal: 'No',
+                    componentPath: '/dashboard/',
+                    isMenu: 'Yes',
+                    isGlobal: 'Yes',
                     accessmode: 1,
                     pageType: 'dashboard',
                 },
-
                 {
                     group: null,
                     groupid: null,
@@ -159,6 +160,19 @@ class Global {
                     pageType: 'form-tabs',
                 },
                 {
+                    group: null,
+                    groupid: null,
+                    id: 'profile-address',
+                    icon: null,
+                    name: 'Profile | Address',
+                    link: '/profile/address',
+                    componentPath: '/profile/address',
+                    isMenu: 'No',
+                    isGlobal: 'Yes',
+                    accessmode: 0,
+                    pageType: 'form-tabs',
+                },
+                {
                     group: 'Employee',
                     groupid: 'employee',
                     id: 'employee',
@@ -177,23 +191,10 @@ class Global {
                     id: 'employee-details',
                     icon: 'fas fa-users',
                     name: 'Employee Details',
-                    link: '/employee/:employee_no',
+                    link: '/employee/details/:employee_no',
                     componentPath: '/employee/details',
                     isMenu: 'No',
                     isGlobal: 'No',
-                    accessmode: 3,
-                    pageType: 'form',
-                },
-                {
-                    group: null,
-                    groupid: null,
-                    id: 'settings-preferences',
-                    icon: 'fas fa-cog',
-                    name: 'Preferences',
-                    link: '/settings/preferences',
-                    componentPath: '/settings/preferences',
-                    isMenu: 'No',
-                    isGlobal: 'Yes',
                     accessmode: 3,
                     pageType: 'form',
                 },
@@ -312,14 +313,20 @@ class Global {
             const empno = datasets.body[empNoIndex][i];
             const fullname = datasets.body[fullNameIndex][i];
             arrReturn.push({
-                link: `/employee/${empno}`,
-                navlink: '/employee/:employee_no',
+                link: `/employee/details/${empno}`,
+                navlink: '/employee/details/:employee_no',
                 title: `${fullname} (${empno})`,
                 type: 'employee',
             });
         }
 
         return { data: arrReturn, datasets };
+    }
+
+    async TestDB(req: express.Request, res: express.Response) {
+        const infSchem = await pool.query('select * from information_schema.tables');
+        // res.send(infSchem);
+        return infSchem;
     }
 }
 

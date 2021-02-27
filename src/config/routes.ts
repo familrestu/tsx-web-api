@@ -19,7 +19,7 @@ const routes = (app: Express): void => {
     /* request to api */
     app.use(apiRouting, checkJWT);
 
-    app.route(apiRouting).all((req: express.Request, res: express.Response) => {
+    app.route(apiRouting).all(async (req: express.Request, res: express.Response) => {
         /* load api */
         let path;
         /* appRoutes is relative to application API */
@@ -36,7 +36,7 @@ const routes = (app: Express): void => {
             // console.log(jspath.resolve());
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const api = require(apipath).default;
-            const result = api[req.params.function](req, res);
+            const result = await api[req.params.function](req, res);
 
             res.send({
                 status: true,
