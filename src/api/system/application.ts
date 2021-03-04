@@ -3,9 +3,9 @@ import jwt from 'jsonwebtoken';
 import { v5 as uuidv5 } from 'uuid';
 import hash from 'hash.js';
 import moment from 'moment';
-// import { Pool, Client } from 'pg';
 import emp from '../hris/emp/EmpData';
 
+// import { Pool, Client } from 'pg';
 // const pool = new Pool();
 
 type JWTPayloadType = {
@@ -23,7 +23,6 @@ type MenuDataType = {
     isMenu: 0 | 1 | 'No' | 'Yes' /* No | 0 = not showing at menu */;
     isGlobal: 0 | 1 | 'No' | 'Yes' /* opening page didn't based on CurrentApp (menuAuthState) */;
     accessmode: 0 | 1 | 2 | 3 | 'read' | 'write' | 'update' | 'delete';
-    pageType: string | 'form' | 'form-tabs' | 'table' | null;
     children?: MenuDataType[];
 };
 
@@ -65,7 +64,6 @@ class Global {
         const uuid = uuidv5(iat.toString(), `${process.env.UUID_NAMESPACE as string}`);
         const jwtSignature = hash.sha256().update(`${uuid}${process.env.JWT_KEY}`).digest('hex');
         const jwtPayload = {
-            // user_id: data.user_id,
             iss: req.headers.host,
             sub: data.username || data.email,
             data,
@@ -114,11 +112,10 @@ class Global {
                     icon: 'fas fa-tachometer-alt',
                     name: 'Dashboard',
                     link: '/',
-                    componentPath: '/dashboard/',
+                    componentPath: '/dashboard',
                     isMenu: 'Yes',
                     isGlobal: 'Yes',
                     accessmode: 1,
-                    pageType: 'dashboard',
                 },
                 {
                     group: null,
@@ -131,7 +128,6 @@ class Global {
                     isMenu: 'No',
                     isGlobal: 'Yes',
                     accessmode: 3,
-                    pageType: 'form-tabs',
                 },
                 {
                     group: null,
@@ -144,7 +140,6 @@ class Global {
                     isMenu: 'No',
                     isGlobal: 'Yes',
                     accessmode: 3,
-                    pageType: 'form-tabs',
                 },
                 {
                     group: null,
@@ -157,7 +152,6 @@ class Global {
                     isMenu: 'No',
                     isGlobal: 'Yes',
                     accessmode: 3,
-                    pageType: 'form-tabs',
                 },
                 {
                     group: null,
@@ -170,10 +164,9 @@ class Global {
                     isMenu: 'No',
                     isGlobal: 'Yes',
                     accessmode: 0,
-                    pageType: 'form-tabs',
                 },
                 {
-                    group: 'Employee',
+                    group: 'employee',
                     groupid: 'employee',
                     id: 'employee',
                     icon: 'fas fa-users',
@@ -183,10 +176,9 @@ class Global {
                     isMenu: 'Yes',
                     isGlobal: 'No',
                     accessmode: 3,
-                    pageType: 'table',
                 },
                 {
-                    group: 'Employee',
+                    group: 'employee',
                     groupid: 'employee',
                     id: 'employee-details',
                     icon: 'fas fa-users',
@@ -196,7 +188,30 @@ class Global {
                     isMenu: 'No',
                     isGlobal: 'No',
                     accessmode: 3,
-                    pageType: 'form',
+                },
+                {
+                    group: 'employee',
+                    groupid: 'employee',
+                    id: 'employee-add',
+                    icon: null,
+                    name: 'Add Employee',
+                    link: '/employee/add',
+                    componentPath: '/employee/add',
+                    isMenu: 'No',
+                    isGlobal: 'No',
+                    accessmode: 3,
+                },
+                {
+                    group: 'components',
+                    groupid: 'components',
+                    id: 'components-modal',
+                    icon: null,
+                    name: 'Modal',
+                    link: '/components/modal',
+                    componentPath: '/components/modal',
+                    isMenu: 'No',
+                    isGlobal: 'Yes',
+                    accessmode: 3,
                 },
             ],
         };
