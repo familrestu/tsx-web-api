@@ -1,20 +1,40 @@
 import { Express } from 'express-serve-static-core';
 import packagejson from '../../package.json';
 import express from 'express';
-import jspath from 'path';
-
+import npmpath from 'path';
+import fs from 'fs-extra';
 import jwt from 'jsonwebtoken';
 import hash from 'hash.js';
 
-const apiRouting = process.env.NODE_ENV === 'development' ? '/api/:module/:method/:function' : '/:module/:method/:function';
 
 const routes = (app: Express): void => {
+    const apiRouting = process.env.NODE_ENV === 'development' ? '/api/:module/:method/:function' : '/:module/:method/:function';
+
     app.all('/', (req, res) => {
         res.json({
             name: packagejson.name,
             version: packagejson.version,
         });
     });
+
+    /* request photo */
+    app.use('/files/:client/:folder/:file_name', (req: express.Request, res: express.Response) => {
+        // console.log(req.params)
+        const { client, folder, file_name } = req.params;
+        const path = npmpath.join(__dirname, '../../public/client/', client, folder, file_name );
+        // console.log(path)
+        try {
+            const img = fs.readFileSync(path)
+            // res.writeHead(200, { 'Content-Type': 'image/jpg' })
+            res.status(200);
+            res.header({ 'Content-Type': 'image/jpg' })
+            res.end(img, 'binary')
+        } catch (error) {
+            res.status(404);
+            res.send({ status: false, message: `${path} not found` });
+        }
+
+    })
 
     /* request to api */
     app.use(apiRouting, checkJWT);
@@ -32,8 +52,8 @@ const routes = (app: Express): void => {
 
         try {
             // const apipath = `../api/${path}`;
-            const apipath = jspath.join(__dirname, '../api/', path);
-            // console.log(jspath.resolve());
+            const apipath = npmpath.join(__dirname, '../api/', path);
+            // console.log(npmpath.resolve());
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const api = require(apipath).default;
             const result = await api[req.params.function](req, res);
