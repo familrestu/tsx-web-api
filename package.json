@@ -63,7 +63,7 @@
     "tsconfig-paths": "^3.9.0"
   },
   "_moduleAliases": {
-    "@system": "./build/src/api/system",
-    "@database": "./build/src/config/database.ts"
+    "@system": "./src/api/system",
+    "@database": "./src/config/database.ts"
   }
 }
