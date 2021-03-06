@@ -175,7 +175,7 @@ class Global {
                     componentPath: '/employee/',
                     isMenu: 'Yes',
                     isGlobal: 'No',
-                    accessmode: 3,
+                    accessmode: 0,
                 },
                 {
                     group: 'employee',
