@@ -75,18 +75,18 @@ class Global {
             status: false,
         };
 
-        if ((req.body.email === 'dev@partout.com' && req.body.password === 'password') || (req.body.is_accountcode !== undefined && req.body.username === 'dev' && req.body.password === 'password')) {
+        if ((req.body.email === 'dev@ersys.com' && req.body.password === 'password') || (req.body.is_accountcode !== undefined && req.body.username === 'dev' && req.body.password === 'password')) {
             const data: JWTPayloadType = {
                 user_id: 1,
                 username: 'famil.restu',
-                email: 'famil.restu@partout.com',
+                email: 'famil.restu@ersys.com',
                 app_id: 1,
-                app_code: 'partout',
-                app_name: 'Partout HR',
+                app_code: 'ersys',
+                app_name: 'Ersys HR',
                 app_logo: null,
                 app_logo_small: null,
                 activated_app: ['hris'],
-                app_list: [{ app_code: 'partout', app_name: 'Partout HR' }],
+                app_list: [{ app_code: 'ersys', app_name: 'Ersys HR' }],
                 default_app: 'hris',
                 current_app: 'hris',
                 full_name: 'Famil Restu Pambudi',
