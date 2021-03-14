@@ -1,10 +1,10 @@
 {
   "name": "familrestu-api",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "src/main.ts",
   "private": true,
   "dependencies": {
-    "bcryptjs": "^2.4.3",
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.5",
@@ -33,7 +33,7 @@
     "lint": "eslint . --ext .ts,.tsx --quiet --fix"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.2",
+    "@types/bcrypt": "^3.0.0",
     "@types/body-parser": "^1.19.0",
     "@types/chai": "^4.2.14",
     "@types/cookie-parser": "^1.4.2",
