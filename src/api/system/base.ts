@@ -1,24 +1,89 @@
-import express from 'express';
+import express, { Request } from 'express';
+import { query, queryReturnType } from '@database';
 
 export type TableDataReturnType = {
     datasets: {
         header: Array<any>;
         body: Array<any>;
+        totalData: number;
+        currentPage: number;
     };
 };
 
 class Base {
-    TableData(req: express.Request): TableDataReturnType {
-        return {
+    async SetListing(req: Request, qData: queryReturnType, filter: { arrSortColumn: string[]; arrSortType: string[]; arrSearchData: any }): Promise<TableDataReturnType> {
+        const result: TableDataReturnType = {
             datasets: {
-                header: ['date', 'start_time', 'end_time'],
-                body: [
-                    ['2020-01-06', '2020-01-02', '2020-01-03', '2020-01-04', '2020-01-05'],
-                    ['06:45', '07:50', '08:00', '08:00', '08:00'],
-                    ['15:00', '18:00', null, '16:30', '15:20'],
-                ],
+                header: [],
+                body: [],
+                totalData: 0,
+                currentPage: 1,
             },
         };
+
+        try {
+            let tempQData = qData;
+            result.datasets.header = [...qData.arrColumn];
+
+            if (filter.arrSortColumn.length || filter.arrSearchData.length) {
+                const { queryString } = qData;
+
+                let tempQueryString = '';
+                const tempArrSort = [];
+                const arrParams = [];
+
+                if (filter.arrSearchData.length) {
+                    let whereQueryString = '';
+                    for (let x = 0; x < filter.arrSearchData.length; x++) {
+                        const search = filter.arrSearchData[x];
+
+                        if (isNaN(search.value)) {
+                            whereQueryString += ` and ${search.column} ilike $${x + 1}`;
+                            arrParams.push(`%${search.value}%`);
+                        }
+
+                        if (!isNaN(search.value)) {
+                            whereQueryString += ` and ${search.column} = $${x + 1}`;
+                            arrParams.push(search.value);
+                        }
+                    }
+
+                    tempQueryString += `where 1 = 1 ${whereQueryString}`;
+                }
+
+                if (filter.arrSortColumn.length || filter.arrSortType.length) {
+                    for (let x = 0; x < filter.arrSortColumn.length; x++) {
+                        const column = filter.arrSortColumn[x];
+                        tempArrSort.push(`${column} ${filter.arrSortType[x]}`);
+                    }
+
+                    tempQueryString += `order by ${tempArrSort.join(', ')}`;
+                }
+
+                const newQuery = `select * from (${queryString}) as x ${tempQueryString}`;
+
+                tempQData = await query(newQuery, arrParams, req.datasource.admin);
+            }
+
+            if (tempQData.rowCount) {
+                for (let i = 0; i < tempQData.arrColumn.length; i++) {
+                    const column = tempQData.arrColumn[i];
+                    const body = [];
+                    for (let x = 0; x < tempQData.rowCount; x++) {
+                        const rows = tempQData.rows[x];
+                        body.push(rows[column]);
+                    }
+                    result.datasets.body.push(body);
+                }
+            }
+
+            result.datasets.totalData = tempQData.rowCount;
+            result.datasets.currentPage = 1;
+        } catch (error) {
+            console.log(`${error.message} Base.SetListing`);
+        }
+
+        return result;
     }
 }
 

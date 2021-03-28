@@ -1,48 +1,68 @@
-import { Client, Pool } from 'pg';
-const db = new Client();
-const pool = new Pool();
+import { Client } from 'pg';
 
-const database = async (): Promise<void> => {
+export type queryReturnType = {
+    queryString: string;
+    queryParams: any[];
+    length: number;
+    rowCount: number;
+    rows: { [key: string]: any }[];
+    duration: number;
+    arrColumn: string[];
+    error?: any;
+};
+
+const query = async (text: string, params: any[], datasource: string): Promise<queryReturnType> => {
+    const result: queryReturnType = {
+        queryString: text,
+        queryParams: params,
+        length: 0,
+        rowCount: 0,
+        rows: [],
+        duration: 0,
+        arrColumn: [],
+    };
+
     try {
-        await db.connect();
-        // console.log('db connected');
+        const start = Date.now();
+        const client = new Client({
+            database: datasource,
+        });
+
+        await client.connect();
+        const query = await client.query({
+            text: text,
+            values: params,
+        });
+        const duration = Date.now() - start;
+
+        const arrColumn = [];
+        for (let i = 0; i < query.fields.length; i++) {
+            const column = query.fields[i];
+            arrColumn.push(column.name);
+        }
+
+        result.rowCount = query.rowCount;
+        result.length = query.rowCount;
+        result.duration = duration;
+        result.rows = query.rows;
+
+        if (query.command === 'SELECT') {
+            result.arrColumn = arrColumn;
+        }
+
+        client.end();
     } catch (error) {
-        console.log(error);
+        result.error = error.message;
+        // console.log(error);
+        throw {
+            error: error,
+            message: error.message,
+            queryString: text.replace(/\n/g, ' '),
+            params: params,
+        };
     }
+
+    return result;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const query = async (text: string, params?: any): Promise<any> => {
-    const start = Date.now();
-    const res = await pool.query(text, params);
-    const duration = Date.now() - start;
-    console.log('executed query', { text, duration, rows: res.rowCount });
-    return res;
-};
-
-export const getClient = async (): Promise<any> => {
-    const client: any = await pool.connect();
-    const query = client.query;
-    const release = client.release;
-    // set a timeout of 5 seconds, after which we will log this client's last query
-    const timeout = setTimeout(() => {
-        console.error('A client has been checked out for more than 5 seconds!');
-        console.error(`The last executed query on this client was: ${client.lastQuery}`);
-    }, 5000);
-    // monkey patch the query method to keep track of the last query executed
-    client.query = (...args: any) => {
-        client.lastQuery = args;
-        return query.apply(client, args);
-    };
-    client.release = () => {
-        // clear our timeout
-        clearTimeout(timeout);
-        // set the methods back to their old un-monkey-patched version
-        client.query = query;
-        client.release = release;
-        return release.apply(client);
-    };
-    return client;
-};
-
-export default database;
+export { query };

@@ -27,3 +27,6 @@ __snapshots__
 # env
 .env
 !.env*.local
+
+#local 
+/database

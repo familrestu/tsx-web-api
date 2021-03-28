@@ -6,10 +6,11 @@ import fs from 'fs-extra';
 import jwt from 'jsonwebtoken';
 import hash from 'hash.js';
 
-
 const routes = (app: Express): void => {
     const apiRouting = process.env.NODE_ENV === 'development' ? '/api/:module/:method/:function' : '/:module/:method/:function';
+    const apiRoutingV2 = process.env.NODE_ENV === 'development' ? '/apiv2/*' : '/*';
 
+    /* check api version */
     app.all('/', (req, res) => {
         res.json({
             name: packagejson.name,
@@ -17,43 +18,40 @@ const routes = (app: Express): void => {
         });
     });
 
-    /* request photo */
+    /* api to get photo */
     app.use('/files/:client/:folder/:file_name', (req: express.Request, res: express.Response) => {
         // console.log(req.params)
         const { client, folder, file_name } = req.params;
-        const path = npmpath.join(__dirname, '../../public/client/', client, folder, file_name );
+        const path = npmpath.join(__dirname, '../../public/client/', client, folder, file_name);
         // console.log(path)
         try {
-            const img = fs.readFileSync(path)
+            const img = fs.readFileSync(path);
             // res.writeHead(200, { 'Content-Type': 'image/jpg' })
             res.status(200);
-            res.header({ 'Content-Type': 'image/jpg' })
-            res.end(img, 'binary')
+            res.header({ 'Content-Type': 'image/jpg' });
+            res.end(img, 'binary');
         } catch (error) {
             res.status(404);
             res.send({ status: false, message: `${path} not found` });
         }
+    });
 
-    })
-
-    /* request to api */
+    /* api routing v1 */
+    app.use(apiRouting, isGlobal);
     app.use(apiRouting, checkJWT);
-
     app.route(apiRouting).all(async (req: express.Request, res: express.Response) => {
-        /* load api */
+        // load api
         let path;
-        /* appRoutes is relative to application API */
-        /* such as hris, etc... */
-        if (req.isAppRoutes) {
-            path = `${req.currentApp}/${req.params.module}/${req.params.method}`;
-        } else {
+        // appRoutes is relative to application API
+        // such as hris, etc...
+        if (req.isGlobal) {
             path = `${req.params.module}/${req.params.method}`;
+        } else {
+            path = `${req.current_app}/${req.params.module}/${req.params.method}`;
         }
 
         try {
-            // const apipath = `../api/${path}`;
             const apipath = npmpath.join(__dirname, '../api/', path);
-            // console.log(npmpath.resolve());
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const api = require(apipath).default;
             const result = await api[req.params.function](req, res);
@@ -65,9 +63,132 @@ const routes = (app: Express): void => {
         } catch (error) {
             res.status(500);
             res.send({ error: `Function ${req.params.function} not found`, status: false, stack: error.message });
-            // console.log(error);
         }
     });
+
+    /* start: api routing V2 */
+    app.route(apiRoutingV2).all(async (req: express.Request, res: express.Response) => {
+        /* load api */
+        let fileName = '';
+        let functionName = '';
+
+        const arrTempFolderPath: string[] = [];
+        const arrUrl = req.url.split('/');
+
+        /* set fileName dan functionName */
+        if (arrUrl.length) {
+            if (arrUrl[arrUrl.length - 1]) {
+                fileName = arrUrl[arrUrl.length - 1].split('.')[0];
+                functionName = arrUrl[arrUrl.length - 1].split('.')[1];
+            }
+        }
+
+        /* check JWT */
+        if ((fileName !== 'authorization' && functionName !== 'login') || (fileName !== 'authorization' && functionName !== 'logout')) {
+            try {
+                /* only check if jwt and uuid exists in signed cookies and file is not authorization and function is not login or logout */
+                if (req.signedCookies.jwt && req.signedCookies.uuid) {
+                    const uuid = req.signedCookies.uuid;
+                    const jwtSignature = hash.sha256().update(`${uuid}${process.env.JWT_KEY}`).digest('hex');
+                    const decoded: any = jwt.verify(req.signedCookies.jwt, jwtSignature);
+
+                    /* set new routes based on curent_app */
+                    req.current_app = decoded.data.current_app;
+
+                    /* set request variable */
+                    req.company_id = decoded.data.company_id;
+                    req.company_code = decoded.data.company_code;
+                    req.datasource = {
+                        admin: `db_${decoded.data.company_code}`,
+                        payroll: `db_${decoded.data.company_code}`,
+                    };
+
+                    /* user type */
+                    req.user = {
+                        user_id: decoded.data.user_id,
+                        username: decoded.data.username,
+                        email: decoded.data.email,
+                        company_id: decoded.data.company_id,
+                        company_code: decoded.data.company_code,
+                        user_type: decoded.data.user_type,
+                    };
+                } else {
+                    if (req.signedCookies === undefined && fileName !== 'application' && functionName === 'getMenu') {
+                        res.status(500);
+                        res.send({ error: 'NotAuthorized', message: 'You are not authorized' });
+                        return false;
+                    }
+                }
+            } catch (error) {
+                if (error.name === 'TokenExpiredError') {
+                    res.status(200);
+                    res.clearCookie('jwt');
+                    res.clearCookie('uuid');
+                    res.send({ error: error.code, message: error.message, stack: error });
+                    return false;
+                } else {
+                    res.status(403);
+                    res.send({ error: error.code, message: error.message, stack: error });
+                    return false;
+                }
+            }
+        }
+
+        /* masukin url menjadi array */
+        if (arrUrl.length > 2) {
+            for (let x = 2; x < arrUrl.length - 1; x++) {
+                const url = arrUrl[x];
+                arrTempFolderPath.push(url);
+            }
+        }
+
+        /* jika bukan filenya application, authorization  */
+        if ((arrUrl[2] !== 'system' && fileName !== 'application') || (arrUrl[2] !== 'system' && fileName !== 'authorization')) {
+            arrTempFolderPath.unshift(req.current_app);
+        }
+
+        const apipath = npmpath.join(__dirname, '../api', arrTempFolderPath.join('/'), fileName);
+        // console.log(arrTempFolderPath, apipath);
+
+        /* check if file exists */
+        try {
+            const isExists = fs.pathExistsSync(`${apipath}.ts`);
+            if (isExists) {
+                if (functionName === undefined) {
+                    res.status(200);
+                    res.send({ message: `Method not found in Url`, status: false });
+                    return false;
+                }
+            } else {
+                res.status(200);
+                res.send({ message: `File ${fileName} not found`, status: false });
+                return false;
+            }
+        } catch (error) {
+            res.status(200);
+            res.send({ message: `File ${fileName} not found`, status: false, error: error });
+            return false;
+        }
+
+        /* load file */
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const api = require(apipath).default;
+            const result = await api[functionName](req, res);
+
+            res.send({
+                status: true,
+                ...result,
+            });
+            return false;
+        } catch (error) {
+            res.status(200);
+            res.send({ message: `Method ${functionName} not found in ${fileName}.ts`, status: false, stack: error });
+            // console.log(error);
+            return false;
+        }
+    });
+    /* end: api routing V2 */
 
     /* not authorized */
     app.use((req: express.Request, res: express.Response) => {
@@ -77,12 +198,6 @@ const routes = (app: Express): void => {
 };
 
 const checkJWT = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
-    if ((req.params.module === 'system' && req.params.method === 'application') || req.params.module === 'components') {
-        req.isAppRoutes = false;
-    } else {
-        req.isAppRoutes = true;
-    }
-
     /* login and logout doesn't require to chekc JWT */
     if (
         (req.params.module === 'system' && req.params.method === 'application' && req.params.function === 'Login') ||
@@ -98,14 +213,33 @@ const checkJWT = (req: express.Request, res: express.Response, next: express.Nex
                 const decoded: any = jwt.verify(req.signedCookies.jwt, jwtSignature);
 
                 /* set new routes based on curent_app */
-                req.currentApp = decoded.data.current_app;
+                req.current_app = decoded.data.current_app;
+
+                /* set request variable */
+                req.company_id = decoded.data.company_id;
+                req.company_code = decoded.data.company_code;
+                req.datasource = {
+                    admin: `db_${decoded.data.company_code}`,
+                    payroll: `db_${decoded.data.company_code}`,
+                };
+
+                /* user type */
+                req.user = {
+                    user_id: decoded.data.user_id,
+                    username: decoded.data.username,
+                    email: decoded.data.email,
+                    company_id: decoded.data.company_id,
+                    company_code: decoded.data.company_code,
+                    user_type: decoded.data.user_type,
+                };
+                // req.user.user_type = decoded.user_type;
                 next();
             } else {
                 /* if there is no signed cookies, and checking loginstatus, then next */
-                if (req.params.module === 'system' && req.params.method === 'application' && req.params.function === 'LoginStatus') {
+                if (req.params.module === 'system' && req.params.method === 'application' && (req.params.function === 'LoginStatus' || req.params.function === 'Register')) {
                     next();
                     /* if its getting menuAuth, send empty array */
-                } else if (req.params.module === 'system' && req.params.method === 'application' && req.params.function === 'GetMenuAuth') {
+                } else if (req.params.module === 'system' && req.params.method === 'application' && req.params.function === 'GetMenu') {
                     res.status(200);
                     res.send({ status: true, menuData: [] });
                 } else {
@@ -126,6 +260,16 @@ const checkJWT = (req: express.Request, res: express.Response, next: express.Nex
             }
         }
     }
+};
+
+const isGlobal = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
+    if (req.params.module === 'system' && req.params.method === 'application') {
+        req.isGlobal = true;
+    } else {
+        req.isGlobal = false;
+    }
+
+    next();
 };
 
 export default routes;
