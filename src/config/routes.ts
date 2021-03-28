@@ -37,7 +37,7 @@ const routes = (app: Express): void => {
     });
 
     /* api routing v1 */
-    app.use(apiRouting, isGlobal);
+    /* app.use(apiRouting, isGlobal);
     app.use(apiRouting, checkJWT);
     app.route(apiRouting).all(async (req: express.Request, res: express.Response) => {
         // load api
@@ -64,7 +64,7 @@ const routes = (app: Express): void => {
             res.status(500);
             res.send({ error: `Function ${req.params.function} not found`, status: false, stack: error.message });
         }
-    });
+    }); */
 
     /* start: api routing V2 */
     app.route(apiRoutingV2).all(async (req: express.Request, res: express.Response) => {
