@@ -1,6 +1,6 @@
 {
   "name": "familrestu-api",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "main": "src/main.ts",
   "private": true,
   "dependencies": {
@@ -45,6 +45,7 @@
     "@types/fs-extra": "^9.0.8",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/mocha": "^8.0.3",
+    "@types/module-alias": "^2.0.0",
     "@types/morgan": "^1.9.1",
     "@types/pg": "^7.14.11",
     "@types/supertest": "^2.0.10",
@@ -62,9 +63,5 @@
     "supertest": "^6.1.3",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0"
-  },
-  "_moduleAliases": {
-    "@system": "./build/src/api/system",
-    "@database": "./build/src/config/database"
   }
 }
