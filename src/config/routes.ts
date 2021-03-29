@@ -7,8 +7,7 @@ import jwt from 'jsonwebtoken';
 import hash from 'hash.js';
 
 const routes = (app: Express): void => {
-    const apiRouting = process.env.NODE_ENV === 'development' ? '/api/:module/:method/:function' : '/:module/:method/:function';
-    const apiRoutingV2 = process.env.NODE_ENV === 'development' ? '/apiv2/*' : '/*';
+    const apiRouting = process.env.NODE_ENV === 'development' ? '/api/*' : '/*';
 
     /* check api version */
     app.all('/', (req, res) => {
@@ -36,38 +35,8 @@ const routes = (app: Express): void => {
         }
     });
 
-    /* api routing v1 */
-    /* app.use(apiRouting, isGlobal);
-    app.use(apiRouting, checkJWT);
+    /* start: api routing */
     app.route(apiRouting).all(async (req: express.Request, res: express.Response) => {
-        // load api
-        let path;
-        // appRoutes is relative to application API
-        // such as hris, etc...
-        if (req.isGlobal) {
-            path = `${req.params.module}/${req.params.method}`;
-        } else {
-            path = `${req.current_app}/${req.params.module}/${req.params.method}`;
-        }
-
-        try {
-            const apipath = npmpath.join(__dirname, '../api/', path);
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const api = require(apipath).default;
-            const result = await api[req.params.function](req, res);
-
-            res.send({
-                status: true,
-                ...result,
-            });
-        } catch (error) {
-            res.status(500);
-            res.send({ error: `Function ${req.params.function} not found`, status: false, stack: error.message });
-        }
-    }); */
-
-    /* start: api routing V2 */
-    app.route(apiRoutingV2).all(async (req: express.Request, res: express.Response) => {
         /* load api */
         let fileName = '';
         let functionName = '';
@@ -134,21 +103,23 @@ const routes = (app: Express): void => {
             }
         }
 
+        const urlIndexNumber = process.env.NODE_ENV === 'development' ? 2 : 1;
+
         /* masukin url menjadi array */
-        if (arrUrl.length > 2) {
-            for (let x = 2; x < arrUrl.length - 1; x++) {
+        if (arrUrl.length > urlIndexNumber) {
+            for (let x = urlIndexNumber; x < arrUrl.length - 1; x++) {
                 const url = arrUrl[x];
                 arrTempFolderPath.push(url);
             }
         }
 
         /* jika bukan filenya application, authorization  */
-        if ((arrUrl[2] !== 'system' && fileName !== 'application') || (arrUrl[2] !== 'system' && fileName !== 'authorization')) {
+        if ((arrUrl[urlIndexNumber] !== 'system' && fileName !== 'application') || (arrUrl[urlIndexNumber] !== 'system' && fileName !== 'authorization')) {
             arrTempFolderPath.unshift(req.current_app);
         }
 
         const apipath = npmpath.join(__dirname, '../api', arrTempFolderPath.join('/'), fileName);
-        // console.log(arrTempFolderPath, apipath);
+        // console.log(arrUrl, arrTempFolderPath, apipath);
 
         /* check if file exists */
         try {
@@ -161,7 +132,7 @@ const routes = (app: Express): void => {
                 }
             } else {
                 res.status(200);
-                res.send({ message: `File ${fileName} not found`, status: false, path: apipath });
+                res.send({ message: `File ${fileName} not found`, status: false, apipath, arrUrl, arrTempFolderPath, env: process.env.NODE_ENV });
                 return false;
             }
         } catch (error) {
@@ -182,8 +153,11 @@ const routes = (app: Express): void => {
             });
             return false;
         } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const api = require(apipath).default;
+
             res.status(200);
-            res.send({ message: `Method ${functionName} not found in ${fileName}.ts`, status: false, stack: error });
+            res.send({ message: `Method ${functionName} not found in ${fileName}`, status: false, error, apipath, arrUrl, arrTempFolderPath, env: process.env.NODE_ENV, api });
             // console.log(error);
             return false;
         }

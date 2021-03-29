@@ -12,7 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "@system*": ["./src/api/system*"],
-      "@database": ["./src/config/database.ts"]
+      "@database": ["./src/config/database"]
     },
     "typeRoots": [
       "./types",

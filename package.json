@@ -65,6 +65,6 @@
   },
   "_moduleAliases": {
     "@system": "./build/src/api/system",
-    "@database": "./build/src/config/database.ts"
+    "@database": "./build/src/config/database"
   }
 }
