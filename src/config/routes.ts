@@ -152,7 +152,7 @@ const routes = (app: Express): void => {
 
         /* check if file exists */
         try {
-            const isExists = fs.pathExistsSync(`${apipath}.ts`);
+            const isExists = fs.pathExistsSync(`${apipath}.${process.env.NODE_ENV === 'development' ? 'ts' : 'js'}`);
             if (isExists) {
                 if (functionName === undefined) {
                     res.status(200);
