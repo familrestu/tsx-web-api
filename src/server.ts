@@ -1,25 +1,16 @@
-import express, { Express as ExpressTypes } from 'express';
-
+import './config/env';
+import './config/modulealias';
+import express from 'express';
 import debug from 'debug';
 import { Express } from 'express-serve-static-core';
-
 import routes from './config/routes';
 import middlewares from './config/middlewares';
-
-// import database from './config/database';
-// import Base from '@system/base';
-
-import './config/env';
-import 'module-alias/register';
 
 const port = process.env.PORT || 5000;
 const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
 (async () => {
     const app = express();
-
-    // await database();
-
     try {
         app.listen(port)
             .on('error', (err: NodeJS.ErrnoException) => () => onErrorServer(err))
