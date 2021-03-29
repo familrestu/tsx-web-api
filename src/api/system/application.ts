@@ -154,6 +154,11 @@ class Application {
     logError(req: express.Request) {
         // console.log(req);
     }
+
+    async Query() {
+        const qTest = await query(`select * from tclmmenu`, [], 'db_ersysdev');
+        return qTest;
+    }
 }
 
 export default new Application();
