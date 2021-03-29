@@ -161,7 +161,7 @@ const routes = (app: Express): void => {
                 }
             } else {
                 res.status(200);
-                res.send({ message: `File ${fileName} not found`, status: false });
+                res.send({ message: `File ${fileName} not found`, status: false, path: apipath });
                 return false;
             }
         } catch (error) {
