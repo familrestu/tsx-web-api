@@ -11,7 +11,7 @@ class userMenu extends Base {
                 select      c.menu_id, c.menu_name, c.group_name, c.url, c.pagepath, p.menu_name as parent_name, c.access_only, c.menu_type, c.status
                 from        tclmmenu c
                 left join   tclmmenu p on p.menu_id = c.parent_id
-                order by    c.menu_order, c.group_name, c.parent_id, c.menu_id
+                order by    c.parent_id, c.menu_order, c.group_name, c.menu_name
                 `,
                 [],
                 req.datasource.admin,
