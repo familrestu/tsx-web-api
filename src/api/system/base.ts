@@ -38,17 +38,17 @@ class Base {
                         const search = filter.arrSearchData[x];
 
                         if (isNaN(search.value)) {
-                            whereQueryString += ` and ${search.column} ilike $${x + 1}`;
+                            whereQueryString += ` and ${search.column} ilike $${x + 1} `;
                             arrParams.push(`%${search.value}%`);
                         }
 
                         if (!isNaN(search.value)) {
-                            whereQueryString += ` and ${search.column} = $${x + 1}`;
+                            whereQueryString += ` and ${search.column} = $${x + 1} `;
                             arrParams.push(search.value);
                         }
                     }
 
-                    tempQueryString += `where 1 = 1 ${whereQueryString}`;
+                    tempQueryString += ` where 1 = 1 ${whereQueryString} `;
                 }
 
                 if (filter.arrSortColumn.length || filter.arrSortType.length) {
@@ -57,10 +57,10 @@ class Base {
                         tempArrSort.push(`${column} ${filter.arrSortType[x]}`);
                     }
 
-                    tempQueryString += `order by ${tempArrSort.join(', ')}`;
+                    tempQueryString += ` order by ${tempArrSort.join(', ')} `;
                 }
 
-                const newQuery = `select * from (${queryString}) as x ${tempQueryString}`;
+                const newQuery = ` select * from (${queryString}) as x ${tempQueryString} `;
 
                 tempQData = await query(newQuery, arrParams, req.datasource.admin);
             }
