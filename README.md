@@ -1,2 +1,7 @@
-# api.ersys.com
-API For ersys.com
+# Description
+
+API For my web applications
+
+# How to use
+
+POST / GET to [app]/[filename].[functions]
