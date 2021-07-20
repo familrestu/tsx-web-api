@@ -1,5 +1,5 @@
 {
-  "name": "familrestu-api",
+  "name": "tsx-web-api",
   "version": "2.3.0",
   "main": "src/main.ts",
   "private": true,
