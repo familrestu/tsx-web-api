@@ -18,7 +18,7 @@ class Authorization {
     }
 
     Init() {
-        if (process.env.NODE_ENV === 'development') {
+        /* if (process.env.NODE_ENV === 'development') {
             this.CookieConfig = {
                 httpOnly: true,
                 signed: true,
@@ -31,7 +31,13 @@ class Authorization {
                 sameSite: 'none',
                 secure: true,
             };
-        }
+        } */
+
+        this.CookieConfig = {
+            httpOnly: true,
+            signed: true,
+            sameSite: 'lax',
+        };
     }
 
     setJWT(req: express.Request, res: express.Response, data: JWTPayloadType) {
