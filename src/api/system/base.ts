@@ -23,6 +23,7 @@ class Base {
 
         try {
             let tempQData = qData;
+
             result.datasets.header = [...qData.arrColumn];
 
             if (filter.arrSortColumn.length || filter.arrSearchData.length) {
@@ -60,7 +61,7 @@ class Base {
                     tempQueryString += ` order by ${tempArrSort.join(', ')} `;
                 }
 
-                const newQuery = ` select * from (${queryString}) as x ${tempQueryString} `;
+                const newQuery = `select * from (${queryString}) as x ${tempQueryString}`;
 
                 tempQData = await query(newQuery, arrParams, req.datasource.admin);
             }
@@ -81,6 +82,19 @@ class Base {
             result.datasets.currentPage = 1;
         } catch (error) {
             console.log(`${error.message} Base.SetListing`);
+        }
+
+        return result;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    async GetFormData(qData: any) {
+        const result: any = {};
+        if (qData.rowCount) {
+            for (let x = 0; x < qData.arrColumn.length; x++) {
+                const column = qData.arrColumn[x];
+                result[column] = qData.rows[0][column];
+            }
         }
 
         return result;

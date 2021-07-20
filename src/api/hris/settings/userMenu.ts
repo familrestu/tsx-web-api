@@ -32,7 +32,7 @@ class userMenu extends Base {
         };
 
         try {
-            const arrParams: any[] = [1, '10'];
+            const arrParams: any[] = [1];
 
             if (req.body.value && req.body.value) {
                 arrParams.push(`%${req.body.value}%`);
@@ -45,7 +45,6 @@ class userMenu extends Base {
                 where       status = $1
                 ${req.body.value && req.body.value !== '' ? `and         c.menu_name ilike $3` : ''}
                 order by    c.menu_order, c.parent_id, c.menu_id
-                limit       $2
                 `,
                 arrParams,
                 req.datasource.admin,
@@ -175,9 +174,9 @@ class userMenu extends Base {
     }
 
     async Details(req: express.Request) {
-        const result: any = {};
+        let result: any = {};
         try {
-            const qMenu = await query(
+            const qData = await query(
                 `
                 select      menu_id, menu_name, url, pagepath, menu_type, status as menu_status, menu_order, access_only, 
                             (case when icon is null then '' else icon end) as icon,
@@ -192,14 +191,8 @@ class userMenu extends Base {
                 req.datasource.admin,
             );
 
-            console.log(qMenu);
-
-            if (qMenu.rowCount) {
-                for (let x = 0; x < qMenu.arrColumn.length; x++) {
-                    const column = qMenu.arrColumn[x];
-                    result[column] = qMenu.rows[0][column];
-                }
-            }
+            result = super.GetFormData(qData);
+            result.status = true;
         } catch (error) {
             result.status = false;
             result.error = error;
