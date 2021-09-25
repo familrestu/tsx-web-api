@@ -50,7 +50,7 @@ class userMenu extends Base {
                 req.datasource.admin,
             );
 
-            console.log(qMenu);
+            // console.log(qMenu);
 
             if (qMenu.rowCount) {
                 for (let i = 0; i < qMenu.rowCount; i++) {

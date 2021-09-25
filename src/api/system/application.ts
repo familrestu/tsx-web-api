@@ -79,7 +79,7 @@ class Application {
             result.data.push({
                 link: `/employee/details/${rows.employee_no}`,
                 title: `${rows.full_name} (${rows.employee_no})`,
-                type: 'Employee',
+                type: 'employee',
             });
         }
 

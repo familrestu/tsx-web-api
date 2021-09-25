@@ -35,7 +35,8 @@ class EmployeeInformation extends Base {
         try {
             const qData = await query(
                 `
-                select  emp_no, full_name, position, department, division, to_char(join_date, 'yyyy-mm-dd') as join_date, grade, gender, to_char(birth_date, 'yyyy-mm-dd') as birth_date
+                select  emp_no, full_name, 1 as position_id, position, department, division, to_char(join_date, 'yyyy-mm-dd') as join_date,
+                        grade, gender, to_char(birth_date, 'yyyy-mm-dd') as birth_date, concat(lower(replace(full_name, ' ', '.')), '@ersysdev.com') as email, 'Earth' as birth_place
                 from    view_employee
                 where   1 = 1
                 and     emp_no = $1
@@ -83,6 +84,48 @@ class EmployeeInformation extends Base {
         const result: any = {
             status: true,
         };
+
+        return result;
+    }
+
+    async GetPositions(req: express.Request) {
+        const result: any = {
+            status: true,
+            searchData: [],
+        };
+
+        const arrSearchData = [
+            {
+                position_id: 1,
+                position_name: 'Junior Software Developer',
+                department: 'Tech Development',
+                division: 'Technology',
+                grade: '1F',
+            },
+            {
+                position_id: 2,
+                position_name: 'Software Developer',
+                department: 'Tech Development',
+                division: 'Technology',
+                grade: '2F',
+            },
+            {
+                position_id: 3,
+                position_name: 'Senior Software Developer',
+                department: 'Tech Development',
+                division: 'Technology',
+                grade: '3F',
+            },
+        ];
+
+        for (let i = 0; i < arrSearchData.length; i++) {
+            const rows = arrSearchData[i];
+            result.searchData.push({
+                label: rows.position_name,
+                value: rows.position_id,
+                ...rows,
+            });
+        }
 
         return result;
     }
