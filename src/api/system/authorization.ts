@@ -81,7 +81,7 @@ class Authorization {
                     const decoded = this.verifyJWT(req.signedCookies.uuid, req.signedCookies.jwt);
 
                     result = { ...result, ...decoded.data, loginStatus: true };
-                } catch (error) {
+                } catch (error: any) {
                     result.loginStatus = false;
                     result.error = error;
                     result.message = error.message;
@@ -115,7 +115,7 @@ class Authorization {
 
                 result.loginStatus = true;
             }
-        } catch (error) {
+        } catch (error: any) {
             result.loginStatus = false;
             result.error = error;
             result.message = error.message;
@@ -215,7 +215,7 @@ class Authorization {
             } else {
                 result.message = 'Company not found!\nContact System Administrator';
             }
-        } catch (error) {
+        } catch (error: any) {
             result.message = `Something wrong.\nContact system administrator!.\n${error.message}`;
             console.log(error.message);
         }
@@ -267,7 +267,7 @@ class Authorization {
                 );
 
                 // console.log(qInsert);
-            } catch (error) {
+            } catch (error: any) {
                 result.error = error;
                 console.log(error.message);
             }

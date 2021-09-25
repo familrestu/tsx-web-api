@@ -8,17 +8,17 @@ class userMenu extends Base {
         try {
             const qMenu = await query(
                 `
-                select      c.menu_id, c.menu_name, c.group_name, c.url, c.pagepath, p.menu_name as parent_name, c.access_only, c.menu_type, c.status
+                select      c.menu_id, c.menu_name, c.group_name, c.url, c.pagepath, p.menu_name as parent_name, c.access_only, c.menu_type, c.status, c.icon
                 from        tclmmenu c
                 left join   tclmmenu p on p.menu_id = c.parent_id
-                order by    c.parent_id, c.menu_order, c.group_name, c.menu_name
+                order by    c.menu_order, c.group_name, c.parent_id, c.menu_name
                 `,
                 [],
                 req.datasource.admin,
             );
 
             result = await super.SetListing(req, qMenu, req.body);
-        } catch (error) {
+        } catch (error: any) {
             result.status = false;
             result.stack = error;
         }
@@ -43,12 +43,14 @@ class userMenu extends Base {
                 select      c.menu_id, c.menu_name, c.url, c.pagepath, c.access_only, c.menu_type, c.status
                 from        tclmmenu c
                 where       status = $1
-                ${req.body.value && req.body.value !== '' ? `and         c.menu_name ilike $3` : ''}
+                ${req.body.value && req.body.value !== '' ? `and         c.menu_name ilike $2` : ''}
                 order by    c.menu_order, c.parent_id, c.menu_id
                 `,
                 arrParams,
                 req.datasource.admin,
             );
+
+            console.log(qMenu);
 
             if (qMenu.rowCount) {
                 for (let i = 0; i < qMenu.rowCount; i++) {
@@ -59,7 +61,7 @@ class userMenu extends Base {
                     });
                 }
             }
-        } catch (error) {
+        } catch (error: any) {
             result.status = false;
         }
 
@@ -110,7 +112,7 @@ class userMenu extends Base {
                 result.status = false;
                 result.message = qInsertMenu.error;
             }
-        } catch (error) {
+        } catch (error: any) {
             result.status = false;
             result.error = error;
             result.message = error.message;
@@ -140,7 +142,7 @@ class userMenu extends Base {
                 where   menu_id = $12
             `,
                 [
-                    req.body.parent_id === '' ? 0 : req.body.parent_id,
+                    req.body.parent_id === '' || req.body.parent_id_label === '' ? 0 : req.body.parent_id,
                     req.body.menu_name,
                     req.body.group_name,
                     req.body.icon,
@@ -164,7 +166,7 @@ class userMenu extends Base {
                 result.status = false;
                 result.message = qUpdateMenu.error;
             }
-        } catch (error) {
+        } catch (error: any) {
             result.status = false;
             result.error = error;
             result.message = error.message;
@@ -193,7 +195,7 @@ class userMenu extends Base {
 
             result = super.GetFormData(qData);
             result.status = true;
-        } catch (error) {
+        } catch (error: any) {
             result.status = false;
             result.error = error;
             result.message = error.message;
@@ -215,7 +217,7 @@ class userMenu extends Base {
                 result.status = false;
                 result.message = qDeleteMenu.error;
             }
-        } catch (error) {
+        } catch (error: any) {
             result.status = false;
             result.error = error;
             result.message = error.message;

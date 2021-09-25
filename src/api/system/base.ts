@@ -80,7 +80,7 @@ class Base {
 
             result.datasets.totalData = tempQData.rowCount;
             result.datasets.currentPage = 1;
-        } catch (error) {
+        } catch (error: any) {
             console.log(`${error.message} Base.SetListing`);
         }
 

@@ -68,7 +68,7 @@ class EmployeeInformation extends Base {
             result.first_name = first_name;
             result.middle_name = middle_name;
             result.last_name = last_name;
-        } catch (error) {
+        } catch (error: any) {
             result.status = false;
             result.error = error;
             result.message = error.message;

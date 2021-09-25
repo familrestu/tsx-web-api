@@ -54,10 +54,34 @@ class Application {
 
         return { data: arrReturn, datasets }; */
 
-        const result = {
+        const qData = await query(
+            `
+                select      emp_no as employee_no, full_name, position, department, division, join_date, grade, gender
+                from        view_employee
+                order by    emp_no
+                `,
+            [],
+            req.datasource.admin,
+        );
+
+        console.log(qData);
+
+        const result: {
+            data: { link: string; title: string; type: string }[];
+            datasets: queryReturnType;
+        } = {
             data: [],
-            datasets: [],
+            datasets: qData,
         };
+
+        for (let i = 0; i < qData.rowCount; i++) {
+            const rows = qData.rows[i];
+            result.data.push({
+                link: `/employee/details/${rows.employee_no}`,
+                title: `${rows.full_name} (${rows.employee_no})`,
+                type: 'Employee',
+            });
+        }
 
         return result;
     }
