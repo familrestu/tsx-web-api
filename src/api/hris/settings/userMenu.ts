@@ -183,7 +183,7 @@ class userMenu extends Base {
                 select      menu_id, menu_name, url, pagepath, menu_type, status as menu_status, menu_order, access_only, 
                             (case when icon is null then '' else icon end) as icon,
                             (case when group_name is null then '' else group_name end) as group_name, 
-                            (case when parent_id = 0 then '' else parent_id::varchar(1) end) as parent_id
+                            (case when parent_id = 0 then '' else parent_id::varchar(10) end) as parent_id
                 from        tclmmenu
                 where       1 = 1
                 and         menu_id = $1
@@ -192,6 +192,8 @@ class userMenu extends Base {
                 [req.body.menu_id],
                 req.datasource.admin,
             );
+
+            console.log(qData);
 
             result = super.GetFormData(qData);
             result.status = true;
