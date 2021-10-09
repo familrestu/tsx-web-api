@@ -129,6 +129,26 @@ class EmployeeInformation extends Base {
 
         return result;
     }
+
+    async Save(req: express.Request) {
+        console.log(req.body);
+    }
+
+    async GetShift(req: express.Request) {
+        const arrOptions: any = [];
+        const totalData = 500;
+
+        for (let i = 0; i < totalData; i++) {
+            arrOptions.push({
+                label: `Shift ${i}`,
+                value: `SHIFT_${i}`,
+            });
+        }
+
+        return {
+            arrOptions: arrOptions,
+        };
+    }
 }
 
 export default new EmployeeInformation();
